@@ -1,0 +1,34 @@
+{
+    "name":         "misnomer",
+    "version":      "9.9.9",
+    "description":  "Inititialize and possibly restart a Paxos consensus.",
+    "author":       "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":     "https://github.com/bigeasy/misnomer",
+    "bugs":         "https://github.com/bigeasy/misnomer/issues",
+    "keywords":
+    [
+                    "paxos", "database", "database", "network", "consensus",
+                    "atomic", "broadcast", "multi-paxos", "queue", "fifo"
+    ],
+    "contributors":
+    [
+    ],
+    "dependencies":
+    {
+                    "monotonic":        "2.x"
+    },
+    "devDependencies":
+    {
+                    "proof":            "1.x"
+    },
+    "scripts":
+    {
+                    "test": "proof platform win32 && proof test */*/*.t.js || t/test"
+    },
+    "license":      "MIT",
+    "repository":
+    {
+                    "type": "git",
+                    "url": "http://github.com/bigeasy/misnomer.git"
+    }
+}
