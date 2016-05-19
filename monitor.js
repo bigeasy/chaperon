@@ -1,35 +1,51 @@
+var cadence = require('cadence')
+
 function Monitor (options, uptime) {
     this._Date = options.Date
     this._ua = options.ua
     this._uptime = uptime
-    // this._uptime = new Uptime(options.uptimeUrl, options.healthPath)
 }
 
 // If we have been stable in machine count and availablity for more than thirty
-// seconds, then if we have an unrecoverable Paxos space, let's reboot the
-// consensus.
+// seconds, then if we have an unrecoverable Paxos island, let's reboot the
+// consensus, otherwise look for machines that are not part of stable island..
 
-// TODO What do you do if you cannot invoke bootstrap? Wait?
-// TODO Isochronous will not run two at the same time, right?
-Monitor.prototype.check = cadence(function (async, uptime) {
-    async(function () {
-        uptime.get(url, async())
-    }, function (response) {
-        if (response.uptime < 30000 || !unrecoverable(response.machines)) {
-            return
-        }
-        var machines = response.machines.slice().sort(function (a, b) {
-            return a.uptime - b.uptime
-        })
-        var bootstrapper = machines.pop()
+Monitor.prototype._check = cadence(function (async, uptime) {
+    async([function () {
         async(function () {
-            this._ua.bootstrap(bootstrapper.url, this._Date.now(), async())
+            uptime.get(url, async())
+        }, function (response) {
+            if (response.uptime < 30000) {
+                return
+            }
+            if (unrecoverable(response.machines)) {
+                var machines = response.machines.slice().sort(function (a, b) {
+                    return a.uptime - b.uptime
+                })
+                var leader = machines.pop(), islandId = this._Date.now()
+                async(function () {
+                    this._ua.bootstrap(leader.url, islandId, async())
+                }, function () {
+                    async.forEach(function (immigrant) {
+                        this._ua.join(immigrant.url, leader.url, islandId, async())
+                    })(machines)
+                })
+            } else {
+                var immigrate = immigration(response.machines), leader = immigrate.leader
+                async.forEach(function (immigrant) {
+                    this._ua.join(immigrant.url, leader.url, leader.islandId, async())
+                })(immigrate.immigrants)
+            }
         }, function () {
-            async.forEach(function (machine) {
-                this._ua.bootstrap(bootstrapper.url, this._Date.now(), async())
-            })(machines)
+            return []
         })
-    }, function () {
-        return []
-    })
+    }, function (error) {
+        logger.error('check', { stack: error.stack })
+    }])
 })
+
+Monitor.prototype.check = cadence(function (async) {
+    this._check(this._uptime, async())
+})
+
+module.exports = Monitor
