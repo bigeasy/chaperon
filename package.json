@@ -1,10 +1,10 @@
 {
-    "name":         "misnomer",
-    "version":      "0.0.0",
+    "name":         "reinstate",
+    "version":      "9.9.9",
     "description":  "Inititialize and possibly restart a Paxos consensus.",
     "author":       "Alan Gutierrez <alan@prettyrobots.com>",
-    "homepage":     "https://github.com/bigeasy/misnomer",
-    "bugs":         "https://github.com/bigeasy/misnomer/issues",
+    "homepage":     "https://github.com/bigeasy/reinstate",
+    "bugs":         "https://github.com/bigeasy/reinstate/issues",
     "keywords":
     [
                     "paxos", "database", "database", "network", "consensus",
@@ -29,6 +29,6 @@
     "repository":
     {
                     "type": "git",
-                    "url": "http://github.com/bigeasy/misnomer.git"
+                    "url": "http://github.com/bigeasy/reinstate.git"
     }
 }
