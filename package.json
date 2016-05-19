@@ -1,6 +1,6 @@
 {
     "name":         "reinstate",
-    "version":      "0.0.0",
+    "version":      "0.0.1",
     "description":  "Inititialize and possibly restart a Paxos consensus.",
     "author":       "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":     "https://github.com/bigeasy/reinstate",
