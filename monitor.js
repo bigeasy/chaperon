@@ -1,7 +1,6 @@
 var cadence = require('cadence')
 
 function Monitor (options, uptime) {
-    this._Date = options.Date
     this._ua = options.ua
     this._uptime = uptime
 }
@@ -22,7 +21,7 @@ Monitor.prototype._check = cadence(function (async, uptime) {
                 var machines = response.machines.slice().sort(function (a, b) {
                     return a.uptime - b.uptime
                 })
-                var leader = machines.pop(), islandId = this._Date.now()
+                var leader = machines.pop(), islandId = Date.now()
                 async(function () {
                     this._ua.bootstrap(leader.url, islandId, async())
                 }, function () {
