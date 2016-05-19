@@ -15,7 +15,9 @@
     ],
     "dependencies":
     {
-                    "monotonic":        "2.x"
+                    "cadence":          "1.x",
+                    "monotonic":        "2.x",
+                    "prolific":         "2.x"
     },
     "devDependencies":
     {
