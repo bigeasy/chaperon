@@ -1,27 +1,27 @@
 var Monotonic = require('monotonic')
 
-module.exports = function (machines) {
-    var islandId = machines.filter(function (machine) {
-        return machine.islandId != null
-    }).map(function (machine) {
-        return machine.islandId
+module.exports = function (colleagues) {
+    var islandId = colleagues.filter(function (colleague) {
+        return colleague.health != null && colleague.health.islandId != null
+    }).map(function (colleague) {
+        return colleague.health.islandId
     }).sort(function (a, b) {
         return +a - +b
     }).pop()
-    var islanders = machines.filter(function (machine) {
-        return machine.islandId == islandId
+    var islanders = colleagues.filter(function (colleague) {
+        return colleague.health.islandId == islandId
     })
-    var leaderId = islanders.map(function (machine) {
-        return machine.goverment
+    var leaderId = islanders.map(function (colleague) {
+        return colleague.health.government
     }).sort(function (a, b) {
         return Monotonic.compare(a.promise, b.promise)
     }).pop().majority[0]
     return {
-        immigrants: machines.filter(function (machine) {
-            return machine.islandId != islandId
+        immigrants: colleagues.filter(function (colleague) {
+            return colleague.health.islandId != islandId
         }),
-        leader: islanders.filter(function (machine) {
-            return machine.legislatorId == leaderId
+        leader: islanders.filter(function (colleague) {
+            return colleague.health.legislatorId == leaderId
         }).pop()
     }
 }
