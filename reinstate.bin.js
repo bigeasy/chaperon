@@ -27,11 +27,10 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     var http = require('http')
 
-    var prolific = require('prolific')
     var Shuttle = require('prolific.shuttle')
     var abend = require('abend')
 
-    var logger = prolific.createLogger('bigeasy.reinstate.bin')
+    var logger = require('prolific.logger').createLogger('bigeasy.reinstate.bin')
 
     Shuttle.shuttle(program, 1000, logger)
 
