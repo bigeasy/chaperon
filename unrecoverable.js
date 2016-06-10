@@ -2,7 +2,9 @@ var Monotonic = require('monotonic')
 
 module.exports = function (island) {
     var islandId = island.colleagues.filter(function (colleague) {
+// TODO: Seems like a bad condition, report unhealthy until naturalized.
         return colleague.health.islandId != null
+            && colleague.health.government.promise != '0/0'
     }).map(function (colleague) {
         return colleague.health.islandId
     }).sort(function (a, b) {
