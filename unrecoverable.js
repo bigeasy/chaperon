@@ -1,7 +1,9 @@
 var Monotonic = require('monotonic')
+var assert = require('assert')
 
-module.exports = function (island) {
-    var islandId = island.colleagues.filter(function (colleague) {
+module.exports = function (colleagues) {
+    assert(colleagues.length, 'colleagues required')
+    var islandId = colleagues.filter(function (colleague) {
 // TODO: Seems like a bad condition, report unhealthy until naturalized.
         return colleague.health.islandId != null
             && colleague.health.government.promise != '0/0'
@@ -13,10 +15,9 @@ module.exports = function (island) {
     if (islandId == null) {
         return true
     }
-    var islanders = island.colleagues.filter(function (colleague) {
+    var islanders = colleagues.filter(function (colleague) {
         return colleague.health.islandId == islandId
     })
-    console.log(islanders)
     var goverment = islanders.map(function (colleague) {
         return colleague.health.government
     }).sort(function (a, b) {

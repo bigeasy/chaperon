@@ -4,7 +4,7 @@ function prove (async, assert) {
     var Monitor = require('../monitor')
     var monitor
     async(function () {
-        new Monitor(null, {
+        new Monitor(null, 'x', {
             get: function (callback) { callback(null, { uptime: 0 }) }
         }).check(async())
     }, function (response) {
@@ -21,7 +21,7 @@ function prove (async, assert) {
                 }
                 callback()
             }
-        }, {
+        }, 'x', {
             get: function (callback) {
                 callback(null,
                 {
@@ -35,7 +35,7 @@ function prove (async, assert) {
                             uptime: 3,
                             islandId: '1',
                             legislatorId: '1',
-                            goverment: {
+                            government: {
                                 promise: '3/0',
                                 majority: [ '1', '4' ],
                                 minority: [ '5' ]
@@ -45,14 +45,14 @@ function prove (async, assert) {
                             uptime: 3,
                             islandId: '1',
                             legislatorId: '2',
-                            goverment: { promise: '2/0' }
+                            government: { promise: '2/0' }
                         },
                         {
                             location: 'x',
                             uptime: 4,
                             islandId: '1',
                             legislatorId: '3',
-                            goverment: { promise: '2/0' }
+                            government: { promise: '2/0' }
                         }
                     ]
                 })
@@ -82,7 +82,7 @@ function prove (async, assert) {
                             location: 'y',
                             islandId: '2',
                             legislatorId: '1',
-                            goverment: {
+                            government: {
                                 promise: '3/0',
                                 majority: [ '1' ],
                                 minority: [ ]
@@ -93,7 +93,7 @@ function prove (async, assert) {
                             uptime: 4,
                             islandId: '1',
                             legislatorId: '3',
-                            goverment: { promise: '2/0' }
+                            government: { promise: '2/0' }
                         }
                     ]
                 })

@@ -1,10 +1,12 @@
 var cadence = require('cadence')
-var logger = require('prolific').createLogger('bigeasy.reinstate')
+var logger = require('prolific.logger').createLogger('bigeasy.reinstate')
 var unrecoverable = require('./unrecoverable')
 var immigration = require('./immigration')
 var util = require('util')
+var assert = require('assert')
 
 function Monitor (ua, url, uptime) {
+    assert(url && uptime, 'constructor')
     this._ua = ua
     this._url = url
     this._uptime = uptime
@@ -81,7 +83,7 @@ Monitor.prototype.check = cadence(function (async) {
             if (this._duration < this._stableAfter) {
                 return []
             }
-            if (unrecoverable(island)) {
+            if (unrecoverable(island.colleagues)) {
                 var leader = island.colleagues.pop(), islandId = Date.now()
                 async(function () {
                     console.log(util.format(this._url, leader.location))

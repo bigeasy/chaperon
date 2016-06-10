@@ -12,7 +12,7 @@ function prove (assert) {
             health: {
                 islandId: '1',
                 legislatorId: '1',
-                goverment: {
+                government: {
                     promise: '3/0',
                     majority: [ '1', '2' ],
                     minority: [ '3' ]
@@ -23,7 +23,7 @@ function prove (assert) {
             health: {
                 islandId: '1',
                 legislatorId: '2',
-                goverment: {
+                government: {
                     promise: '3/0',
                     majority: [ '1', '2' ],
                     minority: [ '3' ]
@@ -34,7 +34,7 @@ function prove (assert) {
             health: {
                 islandId: '1',
                 legislatorId: '3',
-                goverment: {
+                government: {
                     promise: '3/0',
                     majority: [ '1', '2' ],
                     minority: [ '3' ]
@@ -48,7 +48,7 @@ function prove (assert) {
             health: {
                 islandId: '1',
                 legislatorId: '1',
-                goverment: {
+                government: {
                     promise: '3/0',
                     majority: [ '1', '2' ],
                     minority: [ '3' ]
