@@ -84,7 +84,7 @@ Monitor.prototype.check = cadence(function (async) {
             if (unrecoverable(island)) {
                 var leader = island.colleagues.pop(), islandId = Date.now()
                 async(function () {
-                    console.log( util.format(this._url, leader.location))
+                    console.log(util.format(this._url, leader.location))
                     this._ua.fetch({
                         url: util.format(this._url, leader.location)
                     }, {
@@ -93,7 +93,7 @@ Monitor.prototype.check = cadence(function (async) {
                             islandName: island.name,
                             islandId: islandId,
                             colleagueId: leader.colleagueId,
-                            location: {
+                            properties: {
                                 location: leader.location,
                                 islandName: island.name,
                                 colleagueId: leader.colleagueId
@@ -111,7 +111,7 @@ Monitor.prototype.check = cadence(function (async) {
                                 islandName: island.name,
                                 islandId: islandId,
                                 colleagueId: immigrant.colleagueId,
-                                location: {
+                                properties: {
                                     location: immigrant.location,
                                     islandName: island.name,
                                     colleagueId: immigrant.colleagueId
@@ -138,7 +138,7 @@ Monitor.prototype.check = cadence(function (async) {
                                 islandName: island.name,
                                 islandId: leader.health.islandId,
                                 colleagueId: immigrant.colleagueId,
-                                location: {
+                                properties: {
                                     location: immigrant.location,
                                     islandName: island.name,
                                     colleagueId: immigrant.colleagueId
