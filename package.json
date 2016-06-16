@@ -1,43 +1,43 @@
 {
-    "name":         "reinstate",
-    "version":      "0.0.3",
-    "description":  "Inititialize and possibly restart a Paxos consensus.",
-    "author":       "Alan Gutierrez <alan@prettyrobots.com>",
-    "homepage":     "https://github.com/bigeasy/reinstate",
-    "bugs":         "https://github.com/bigeasy/reinstate/issues",
+    "name":                 "reinstate",
+    "version":              "0.0.3",
+    "description":          "Inititialize and possibly restart a Paxos consensus.",
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/reinstate",
+    "bugs":                 "https://github.com/bigeasy/reinstate/issues",
     "keywords":
     [
-                    "paxos", "database", "database", "network", "consensus",
-                    "atomic", "broadcast", "multi-paxos", "queue", "fifo"
+                            "paxos", "database", "database", "network", "consensus",
+                            "atomic", "broadcast", "multi-paxos", "queue", "fifo"
     ],
     "contributors":
     [
     ],
     "dependencies":
     {
-                    "abend":            "1.x",
-                    "arguable":         "2.x",
-                    "cadence":          "1.x",
-                    "isochronous":      "1.x",
-                    "mingle.uptime":    "0.x",
-                    "monotonic":        "2.x",
-                    "prolific.logger":  "0.0.1",
-                    "prolific.main":    "0.0.2",
-                    "prolific.shuttle": "2.x",
-                    "vizsla":           "1.x"
+                            "abend":                        "1.x",
+                            "arguable":                     "2.x",
+                            "cadence":                      "1.x",
+                            "isochronous":                  "1.x",
+                            "mingle.uptime":                "0.x",
+                            "monotonic":                    "2.x",
+                            "prolific.logger":              "0.0.1",
+                            "prolific.main":                "0.0.2",
+                            "prolific.shuttle":             "2.x",
+                            "vizsla":                       "1.x"
     },
     "devDependencies":
     {
-                    "proof":            "1.x"
+                            "proof":                        "1.x"
     },
     "scripts":
     {
-                    "test": "proof platform win32 && proof test */*/*.t.js || t/test"
+                            "test": "proof platform win32 && proof test */*/*.t.js || t/test"
     },
-    "license":      "MIT",
+    "license":              "MIT",
     "repository":
     {
-                    "type": "git",
-                    "url": "http://github.com/bigeasy/reinstate.git"
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/reinstate.git"
     }
 }
