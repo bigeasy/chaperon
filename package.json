@@ -2,17 +2,20 @@
     "name":                 "reinstate",
     "version":              "0.0.3",
     "description":          "Inititialize and possibly restart a Paxos consensus.",
-    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "homepage":             "https://github.com/bigeasy/reinstate",
-    "bugs":                 "https://github.com/bigeasy/reinstate/issues",
     "keywords":
     [
                             "paxos", "database", "database", "network", "consensus",
                             "atomic", "broadcast", "multi-paxos", "queue", "fifo"
     ],
-    "contributors":
-    [
-    ],
+    "author":               "Alan Gutierrez <alan@prettyrobots.com>",
+    "homepage":             "https://github.com/bigeasy/reinstate",
+    "bugs":                 "https://github.com/bigeasy/reinstate/issues",
+    "license":              "MIT",
+    "repository":
+    {
+                            "type": "git",
+                            "url": "http://github.com/bigeasy/reinstate.git"
+    },
     "dependencies":
     {
                             "abend":                        "1.x",
@@ -30,14 +33,13 @@
     {
                             "proof":                        "1.x"
     },
+    "main":                 "reinstate.bin",
+    "bin":
+    {
+                            "reinstate":                    "reinstate.bin.js"
+    },
     "scripts":
     {
                             "test": "proof platform win32 && proof test */*/*.t.js || t/test"
-    },
-    "license":              "MIT",
-    "repository":
-    {
-                            "type": "git",
-                            "url": "http://github.com/bigeasy/reinstate.git"
     }
 }
