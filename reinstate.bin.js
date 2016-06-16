@@ -49,4 +49,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
         interval: 1000
     })
     isochronous.run(abend)
+
+    process.on('SIGINT', isochronous.stop.bind(isochronous))
+    process.on('SIGTERM', isochronous.stop.bind(isochronous))
+
+    logger.info('started')
 }))
