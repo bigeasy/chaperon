@@ -32,11 +32,12 @@ Monitor.prototype._steadfast = function  (previous, next) {
 // seconds, then if we have an unrecoverable Paxos island, let's reboot the
 // consensus, otherwise look for machines that are not part of stable island..
 
+var util = require('util')
 Monitor.prototype.check = cadence(function (async) {
     async(function () {
         this._uptime.get(async())
     }, function (response) {
-        console.log(response)
+        console.log(util.inspect(response, { depth: Infinity }))
         if (response.uptime < this._stableAfter) {
             return []
         }
@@ -129,7 +130,7 @@ Monitor.prototype.check = cadence(function (async) {
                 })
             } else {
                 var immigrate = immigration(island.colleagues), leader = immigrate.leader
-                console.log(immigrate)
+                console.log(util.inspect(immigrate, { depth: Infinity }))
                 async.forEach(function (immigrant) {
                     async(function () {
                         this._ua.fetch({
