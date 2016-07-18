@@ -10,6 +10,9 @@
         -d, --discovery <url>
             discovery url
 
+        -c, --colleagues <url>
+            colleagues url pattern
+
         -H, --health <url pattern>
             health url pattern
 
@@ -42,13 +45,13 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Vizsla = require('vizsla')
     var Monitor = require('./monitor')
     var Uptime = require('mingle.uptime')
-    var uptime = new Uptime(program.command.param.discovery, program.command.param.health, new Vizsla)
-    var monitor = new Monitor(new Vizsla, 'http://%s', uptime)
+    var uptime = new Uptime(program.command.param.discovery, program.command.param.colleagues, new Vizsla)
+    var monitor = new Monitor(new Vizsla, 'http://%s', uptime, program.command.param.health)
 
     var Isochronous = require('isochronous')
     var isochronous = new Isochronous({
         operation: { object: monitor, method: 'check' },
-        interval: 1000
+        interval: 15000
     })
     isochronous.run(abend)
 

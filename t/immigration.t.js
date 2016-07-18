@@ -4,56 +4,34 @@ function prove (assert) {
     var immigration = require('../immigration')
     var outcome = immigration([
         {
-            health: {
-                islandId: '0'
-            }
+            islandId: '0'
         },
         {
-            health: {
-                islandId: '1',
-                legislatorId: '1',
-                government: {
-                    promise: '3/0',
-                    majority: [ '1', '2' ],
-                    minority: [ '3' ]
-                }
-            }
+            islandId: '1',
+            colleagueId: '1',
+            promise: '3/0',
+            leader: '1'
         },
         {
-            health: {
-                islandId: '1',
-                legislatorId: '2',
-                government: {
-                    promise: '3/0',
-                    majority: [ '1', '2' ],
-                    minority: [ '3' ]
-                }
-            }
+            islandId: '1',
+            colleagueId: '2',
+            promise: '3/0',
+            majority: '1'
         },
         {
-            health: {
-                islandId: '1',
-                legislatorId: '3',
-                government: {
-                    promise: '3/0',
-                    majority: [ '1', '2' ],
-                    minority: [ '3' ]
-                }
-            }
+            islandId: '1',
+            colleagueId: '3',
+            promise: '3/0',
+            leader: '1'
         }
     ])
     assert(outcome, {
-        immigrants: [{ health: { islandId: '0' } }],
+        immigrants: [{ islandId: '0' }],
         leader: {
-            health: {
-                islandId: '1',
-                legislatorId: '1',
-                government: {
-                    promise: '3/0',
-                    majority: [ '1', '2' ],
-                    minority: [ '3' ]
-                }
-            }
+            islandId: '1',
+            colleagueId: '1',
+            promise: '3/0',
+            leader: '1'
         }
     }, 'immigration')
 }

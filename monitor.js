@@ -1,12 +1,15 @@
+// TODO Things like this need a careful name auditing.
+// TODO What is that supposed to mean; "name auditing?"
 var cadence = require('cadence')
 var logger = require('prolific.logger').createLogger('bigeasy.reinstate')
 var unrecoverable = require('./unrecoverable')
 var immigration = require('./immigration')
 var util = require('util')
 var assert = require('assert')
+var transform = require('./transform')
+var concat = [].concat
 
-function Monitor (ua, url, uptime) {
-    assert(url && uptime, 'constructor')
+function Monitor (ua, url, uptime, health) {
     this._ua = ua
     this._url = url
     this._uptime = uptime
@@ -14,17 +17,17 @@ function Monitor (ua, url, uptime) {
     this._duraiton = 0
     this._previous = []
     this._lastChecked = null
+    this._health = health
 }
 
 Monitor.prototype._steadfast = function  (previous, next) {
-    previous = previous.map(function (colleague) {
-        return String(colleague.colleagueId)
-    }).sort()
-    next = next.map(function (colleague) {
-        return String(colleague.colleagueId)
-    }).sort()
-    return next.filter(function (id, index) {
-        return previous[index] == id
+    next = next.sort(function (a, b) {
+        return a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+    })
+    return next.filter(function (colleague, index) {
+        return previous[index] != null
+            && previous[index].key == colleague.key
+            && previous[index].uptime < colleague.uptime
     }).length == next.length
 }
 
@@ -32,134 +35,144 @@ Monitor.prototype._steadfast = function  (previous, next) {
 // seconds, then if we have an unrecoverable Paxos island, let's reboot the
 // consensus, otherwise look for machines that are not part of stable island..
 
-var util = require('util')
-Monitor.prototype.check = cadence(function (async) {
-    async(function () {
-        this._uptime.get(async())
-    }, function (response) {
-        console.log(util.inspect(response, { depth: Infinity }))
-        if (response.uptime < this._stableAfter) {
-            return []
-        }
-// TODO Second uptime.
-        var colleagues = [].concat.apply([], response.machines.map(function (machine) {
-            return machine.health.colleagues.map(function (colleague) {
-                return {
-                    location: machine.location,
-                    islandName: colleague.islandName,
-                    colleagueId: colleague.colleagueId,
-                    health: colleague.health
-                }
-            })
-        }))
-        var islands = colleagues.map(function (colleague) {
-            return colleague.islandName
-        }).filter(function (islandNames, index, set) {
-            return set.indexOf(islandNames) == index
-        }).map(function (islandName) {
+Monitor.prototype._evaluate = function (islands, now) {
+    var operations = []
+    var current = concat.apply([], islands.map(function (island) {
+        return island.colleagues.map(function (colleague) {
             return {
-                name: islandName,
-                colleagues: colleagues.filter(function (colleague) {
-                    return colleague.islandName == islandName
-                }).sort(function (a, b) {
-                    return a.uptime - b.uptime
-                })
+                key: colleague.key,
+                uptime: colleague.uptime == null ? -1 : colleague.uptime
             }
         })
-        var now = Date.now()
-        async.forEach(function (island) {
-            if (island.colleagues.length == 0 ||
-                island.colleagues.filter(function (colleague) {
-                    return colleague.health != null
-                }).length != island.colleagues.length ||
-                !this._steadfast(this._previous, island.colleagues)
-            ) {
-                this._duration = 0
-            } else {
-                this._duration += now - this._lastChecked
-            }
-            this._lastChecked = now
-            this._previous = island.colleagues
-            console.log(island.name, this._duration, this._stableAfter)
-            if (this._duration < this._stableAfter) {
-                return []
-            }
-            if (unrecoverable(island.colleagues)) {
-                var leader = island.colleagues.pop(), islandId = Date.now()
-                async(function () {
-                    console.log(util.format(this._url, leader.location))
-                    this._ua.fetch({
+    }))
+    if (this._steadfast(this._previous, current)) {
+        this._duration += now - this._lastChecked
+    } else {
+        this._duration = 0
+    }
+    this._lastChecked = now
+    this._previous = current
+    if (this._duration < this._stableAfter) {
+        return []
+    }
+    islands.forEach(function (island) {
+        if (unrecoverable(island.colleagues)) {
+            var leader = island.colleagues.pop(), islandId = now
+            operations.push([
+                {
+                    url: util.format(this._url, leader.location)
+                }, {
+                    url: '/bootstrap',
+                    post: {
+                        islandName: island.name,
+                        islandId: islandId,
+                        colleagueId: leader.colleagueId,
+                        properties: {
+                            location: leader.location,
+                            islandName: island.name,
+                            colleagueId: leader.colleagueId
+                        }
+                    }
+                }
+            ])
+            island.colleagues.forEach(function (immigrant) {
+                operations.push([
+                    {
                         url: util.format(this._url, leader.location)
                     }, {
-                        url: '/bootstrap',
+                        url: '/join',
                         post: {
                             islandName: island.name,
                             islandId: islandId,
-                            colleagueId: leader.colleagueId,
+                            colleagueId: immigrant.colleagueId,
                             properties: {
+                                location: immigrant.location,
+                                islandName: island.name,
+                                colleagueId: immigrant.colleagueId
+                            },
+                            liaison: {
                                 location: leader.location,
                                 islandName: island.name,
                                 colleagueId: leader.colleagueId
                             }
                         }
-                    }, async())
-                }, function (body, response) {
-                    console.log(response.statusCode)
-                    async.forEach(function (immigrant) {
-                        this._ua.fetch({
-                            url: util.format(this._url, leader.location)
-                        }, {
-                            url: '/join',
-                            post: {
+                    }
+                ])
+            }, this)
+        } else {
+            var immigrate = immigration(island.colleagues), leader = immigrate.leader
+            immigrate.immigrants.forEach(function (immigrant) {
+                operations.push([
+                    {
+                        url: util.format(this._url, immigrant.location)
+                    }, {
+                        url: '/join',
+                        post: {
+                            islandName: island.name,
+                            islandId: leader.health.islandId,
+                            colleagueId: immigrant.colleagueId,
+                            properties: {
+                                location: immigrant.location,
                                 islandName: island.name,
-                                islandId: islandId,
-                                colleagueId: immigrant.colleagueId,
-                                properties: {
-                                    location: immigrant.location,
-                                    islandName: island.name,
-                                    colleagueId: immigrant.colleagueId
-                                },
-                                liaison: {
-                                    location: leader.location,
-                                    islandName: island.name,
-                                    colleagueId: leader.colleagueId
-                                }
+                                colleagueId: immigrant.colleagueId
+                            },
+                            liaison: {
+                                location: immigrate.leader.location,
+                                islandName: island.name,
+                                colleagueId: immigrate.leader.colleagueId
                             }
-                        }, async())
-                    })(island.colleagues)
-                })
-            } else {
-                var immigrate = immigration(island.colleagues), leader = immigrate.leader
-                console.log(util.inspect(immigrate, { depth: Infinity }))
-                async.forEach(function (immigrant) {
+                        }
+                    }
+                ])
+            })
+        }
+    }, this)
+    console.log(require('util').inspect(operations, { depth: null }))
+    return operations
+}
+
+Monitor.prototype._operate = cadence(function (async, operations) {
+    async.map(function (operation) {
+        async(function () {
+            this._ua.fetch(operation, { nullify: true }, async())
+        }, function (body) {
+            return [ body ]
+        })
+    })(operations)
+})
+
+Monitor.prototype._operations = cadence(function (async) {
+    var colleagues = {}
+    async(function () {
+        this._uptime.get(async())
+    }, function (response) {
+        async(function () {
+            async.forEach(function (machine) {
+                async.forEach(function (colleague) {
                     async(function () {
                         this._ua.fetch({
-                            url: util.format(this._url, immigrant.location)
-                        }, {
-                            url: '/join',
-                            post: {
-                                islandName: island.name,
-                                islandId: leader.health.islandId,
-                                colleagueId: immigrant.colleagueId,
-                                properties: {
-                                    location: immigrant.location,
-                                    islandName: island.name,
-                                    colleagueId: immigrant.colleagueId
-                                },
-                                liaison: {
-                                    location: immigrate.leader.location,
-                                    islandName: island.name,
-                                    colleagueId: immigrate.leader.colleagueId
-                                }
-                            },
+                            url: util.format(this._health, machine.location),
+                            post: colleague,
                             nullify: true
                         }, async())
-                    }, function (body, response) {
-                        console.log(response.statusCode)
+                    }, function (body) {
+                console.log('>', colleague, body,
+                             util.format(this._health, machine.location))
+                        colleagues['[' + colleague.islandName + ']' + colleague.colleagueId] = body
                     })
-                })(immigrate.immigrants)
+                })(machine.health.colleagues)
+            })(response.machines)
+        }, function () {
+            return {
+                mingle: response,
+                colleagues: colleagues
             }
-        })(islands)
+        })
+    }, function (response) {
+        var transformed = transform(response)
+        var evaluation = this._evaluate(transformed, Date.now())
+        console.log(require('util').inspect(evaluation, { depth: null }))
+        return [ evaluation ]
     })
 })
 

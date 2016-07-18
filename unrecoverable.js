@@ -5,10 +5,10 @@ module.exports = function (colleagues) {
     assert(colleagues.length, 'colleagues required')
     var islandId = colleagues.filter(function (colleague) {
 // TODO: Seems like a bad condition, report unhealthy until naturalized.
-        return colleague.health.islandId != null
-            && colleague.health.government.promise != '0/0'
+        return colleague.islandId != null
+            && colleague.promise != '0/0'
     }).map(function (colleague) {
-        return colleague.health.islandId
+        return colleague.islandId
     }).sort(function (a, b) {
         return +a - +b
     }).pop()
@@ -16,15 +16,13 @@ module.exports = function (colleagues) {
         return true
     }
     var islanders = colleagues.filter(function (colleague) {
-        return colleague.health.islandId == islandId
+        return colleague.islandId == islandId
+            && colleague.promise != '0/0'
     })
-    var goverment = islanders.map(function (colleague) {
-        return colleague.health.government
-    }).sort(function (a, b) {
-        return Monotonic.compare(a.promise, b.promise)
-    }).pop()
-    var parliament = goverment.majority.concat(goverment.minority)
+    var parliament = islanders.sort(function (a, b) {
+        return Monotonic.compare(b.promise, a.promise)
+    })[0].parliament
     return islanders.filter(function (colleague) {
-        return ~parliament.indexOf(colleague.health.legislatorId)
+        return ~parliament.indexOf(colleague.colleagueId)
     }).length < Math.ceil(parliament.length / 2)
 }

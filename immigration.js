@@ -2,26 +2,25 @@ var Monotonic = require('monotonic')
 
 module.exports = function (colleagues) {
     var islandId = colleagues.filter(function (colleague) {
-        return colleague.health != null && colleague.health.islandId != null
+        return colleague.islandId != null
     }).map(function (colleague) {
-        return colleague.health.islandId
+        return colleague.islandId
     }).sort(function (a, b) {
         return +a - +b
     }).pop()
     var islanders = colleagues.filter(function (colleague) {
-        return colleague.health.islandId == islandId
+        return colleague.islandId == islandId
     })
-    var leaderId = islanders.map(function (colleague) {
-        return colleague.health.government
+    var leaderId = islanders.filter(function (colleague) {
+        return colleague.promise != '0/0'
     }).sort(function (a, b) {
         return Monotonic.compare(a.promise, b.promise)
-    }).pop().majority[0]
-    return {
-        immigrants: colleagues.filter(function (colleague) {
-            return colleague.health.islandId != islandId
-        }),
-        leader: islanders.filter(function (colleague) {
-            return colleague.health.legislatorId == leaderId
-        }).pop()
-    }
+    }).pop().leader
+    var leader = islanders.filter(function (colleague) {
+        return colleague.colleagueId == leaderId
+    }).pop()
+    var immigrants = leader == null ? [] : colleagues.filter(function (colleague) {
+        return colleague.islandId != islandId
+    })
+    return { leader: leader, immigrants: immigrants }
 }
