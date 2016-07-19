@@ -146,8 +146,12 @@ Monitor.prototype._operations = cadence(function (async) {
     async(function () {
         this._uptime.get(async())
     }, function (response) {
+        console.log('here', response)
         async(function () {
             async.forEach(function (machine) {
+                if (machine.health == null) {
+                    return []
+                }
                 async.forEach(function (colleague) {
                     async(function () {
                         this._ua.fetch({
@@ -156,8 +160,6 @@ Monitor.prototype._operations = cadence(function (async) {
                             nullify: true
                         }, async())
                     }, function (body) {
-                console.log('>', colleague, body,
-                             util.format(this._health, machine.location))
                         colleagues['[' + colleague.islandName + ']' + colleague.colleagueId] = body
                     })
                 })(machine.health.colleagues)
@@ -173,6 +175,14 @@ Monitor.prototype._operations = cadence(function (async) {
         var evaluation = this._evaluate(transformed, Date.now())
         console.log(require('util').inspect(evaluation, { depth: null }))
         return [ evaluation ]
+    })
+})
+
+Monitor.prototype.check = cadence(function (async) {
+    async(function () {
+        this._operations(async())
+    }, function (operations) {
+        this._operate(operations, async())
     })
 })
 

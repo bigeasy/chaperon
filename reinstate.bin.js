@@ -51,7 +51,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Isochronous = require('isochronous')
     var isochronous = new Isochronous({
         operation: { object: monitor, method: 'check' },
-        interval: 15000
+        interval: 1000
     })
     isochronous.run(abend)
 

@@ -3,7 +3,7 @@ var concat = [].concat
 module.exports = function (response) {
     console.log(require('util').inspect(response, { depth: null }))
     var colleagues = concat.apply([], response.mingle.machines.map(function (machine) {
-        return machine.health.colleagues.map(function (colleague) {
+        return machine.health ? machine.health.colleagues.map(function (colleague) {
             var key = '[' + colleague.islandName + ']' + colleague.colleagueId
             var health = response.colleagues[key]
             var promise = null, leader = null, islandId = null, parliament = null, uptime = null
@@ -28,7 +28,7 @@ module.exports = function (response) {
                 leader: leader,
                 parliament: parliament
             }
-        })
+        }) : []
     }))
     var outcome = colleagues.map(function (colleague) {
         return colleague.islandName
