@@ -1,6 +1,6 @@
 {
     "name":                 "reinstate",
-    "version":              "0.0.8",
+    "version":              "0.0.9",
     "description":          "Inititialize and possibly restart a Paxos consensus.",
     "keywords":
     [
