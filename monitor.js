@@ -109,7 +109,7 @@ Monitor.prototype._evaluate = function (islands, now) {
                         url: '/join',
                         post: {
                             islandName: island.name,
-                            islandId: leader.health.islandId,
+                            islandId: leader.islandId,
                             colleagueId: immigrant.colleagueId,
                             properties: {
                                 location: immigrant.location,
@@ -117,14 +117,14 @@ Monitor.prototype._evaluate = function (islands, now) {
                                 colleagueId: immigrant.colleagueId
                             },
                             liaison: {
-                                location: immigrate.leader.location,
+                                location: leader.location,
                                 islandName: island.name,
-                                colleagueId: immigrate.leader.colleagueId
+                                colleagueId: leader.colleagueId
                             }
                         }
                     }
                 ])
-            })
+            }, this)
         }
     }, this)
     console.log(require('util').inspect(operations, { depth: null }))
