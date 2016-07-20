@@ -101,6 +101,7 @@ Monitor.prototype._evaluate = function (islands, now) {
             }, this)
         } else {
             var immigrate = immigration(island.colleagues), leader = immigrate.leader
+            console.log(require('util').inspect(immigrate, { depth: null }))
             immigrate.immigrants.forEach(function (immigrant) {
                 operations.push([
                     {
