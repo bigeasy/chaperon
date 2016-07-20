@@ -66,6 +66,7 @@ function prove (async, assert) {
         monitor._operations(async())
     }, function (operations) {
         assert(operations, [], 'operations')
+        monitor.check(async())
     })
 
 }
