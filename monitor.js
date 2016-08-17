@@ -8,6 +8,7 @@ var util = require('util')
 var assert = require('assert')
 var transform = require('./transform')
 var concat = [].concat
+var log = logger.trace.bind(logger)
 
 function Monitor (ua, url, uptime, health) {
     this._ua = ua
@@ -135,7 +136,7 @@ Monitor.prototype._evaluate = function (islands, now) {
 Monitor.prototype._operate = cadence(function (async, operations) {
     async.map(function (operation) {
         async(function () {
-            this._ua.fetch(operation, { nullify: true }, async())
+            this._ua.fetch(operation, { log: log, nullify: true }, async())
         }, function (body) {
             return [ body ]
         })
@@ -159,6 +160,7 @@ Monitor.prototype._operations = cadence(function (async) {
                         this._ua.fetch({
                             url: util.format(this._health, machine.location),
                             post: colleague,
+                            log: log,
                             nullify: true
                         }, async())
                     }, function (body) {
