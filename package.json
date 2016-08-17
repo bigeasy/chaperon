@@ -30,7 +30,7 @@
     },
     "devDependencies":
     {
-                            "inlet":                        "1.2.x",
+                            "inlet":                        "1.3.x",
                             "proof":                        "1.1.x"
     },
     "main":                 "reinstate.bin",
