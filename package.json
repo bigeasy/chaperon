@@ -31,7 +31,7 @@
     "devDependencies":
     {
                             "inlet":                        "1.2.x",
-                            "proof":                        "1.0.x"
+                            "proof":                        "1.1.x"
     },
     "main":                 "reinstate.bin",
     "bin":
