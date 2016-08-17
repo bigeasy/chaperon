@@ -39,14 +39,14 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     Shuttle.shuttle(program, 1000, logger)
 
-    program.helpIf(program.command.param.help)
-    program.command.required('discovery', 'health')
+    program.helpIf(program.ultimate.help)
+    program.required('discovery', 'health')
 
     var Vizsla = require('vizsla')
     var Monitor = require('./monitor')
     var Uptime = require('mingle.uptime')
-    var uptime = new Uptime(program.command.param.discovery, program.command.param.colleagues, new Vizsla)
-    var monitor = new Monitor(new Vizsla, 'http://%s', uptime, program.command.param.health)
+    var uptime = new Uptime(program.ultimate.discovery, program.ultimate.colleagues, new Vizsla)
+    var monitor = new Monitor(new Vizsla, 'http://%s', uptime, program.ultimate.health)
 
     var Isochronous = require('isochronous')
     var isochronous = new Isochronous({
@@ -55,8 +55,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     })
     isochronous.run(abend)
 
-    process.on('SIGINT', isochronous.stop.bind(isochronous))
-    process.on('SIGTERM', isochronous.stop.bind(isochronous))
+    process.on('shutdown', isochronous.stop.bind(isochronous))
 
     logger.info('started')
 }))

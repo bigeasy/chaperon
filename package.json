@@ -19,7 +19,7 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "arguable":                     "2.6.x",
+                            "arguable":                     "3.1.x",
                             "cadence":                      "1.0.x",
                             "isochronous":                  "1.0.x",
                             "mingle.uptime":                "0.0.x",

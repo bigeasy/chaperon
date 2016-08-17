@@ -154,6 +154,7 @@ Monitor.prototype._operations = cadence(function (async) {
                     return []
                 }
                 async.forEach(function (colleague) {
+                    console.log(colleague)
                     async(function () {
                         this._ua.fetch({
                             url: util.format(this._health, machine.location),
@@ -161,6 +162,7 @@ Monitor.prototype._operations = cadence(function (async) {
                             nullify: true
                         }, async())
                     }, function (body) {
+                        // TODO body can be null.
                         colleagues['[' + colleague.islandName + ']' + colleague.colleagueId] = body
                     })
                 })(machine.health.colleagues)
