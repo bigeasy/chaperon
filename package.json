@@ -1,11 +1,15 @@
 {
     "name":                 "reinstate",
     "version":              "0.0.13",
-    "description":          "Inititialize and possibly restart a Paxos consensus.",
+    "description":
+
+      "Inititialize and possibly restart a Paxos consensus.",
+
     "keywords":
     [
                             "paxos", "database", "database", "network", "consensus",
-                            "atomic", "broadcast", "multi-paxos", "queue", "fifo"
+                            "atomic", "broadcast", "multi-paxos", "queue",
+                            "fifo"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
     "homepage":             "https://github.com/bigeasy/reinstate",
