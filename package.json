@@ -26,7 +26,7 @@
                             "arguable":                     "4.0.x",
                             "cadence":                      "1.0.x",
                             "isochronous":                  "1.0.x",
-                            "mingle.uptime":                "0.0.x",
+                            "mingle.uptime":                "0.1.x",
                             "monotonic":                    "2.0.x",
                             "prolific.logger":              "2.0.x",
                             "prolific.shuttle":             "4.0.x",
