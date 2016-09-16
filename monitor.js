@@ -102,7 +102,7 @@ Monitor.prototype._evaluate = function (islands, now) {
             }, this)
         } else {
             var immigrate = immigration(island.colleagues), leader = immigrate.leader
-            console.log(require('util').inspect(immigrate, { depth: null }))
+            logger.info('immigrate', { $immigrate: immigrate })
             immigrate.immigrants.forEach(function (immigrant) {
                 operations.push([
                     {
@@ -129,7 +129,7 @@ Monitor.prototype._evaluate = function (islands, now) {
             }, this)
         }
     }, this)
-    console.log(require('util').inspect(operations, { depth: null }))
+    logger.info('operations', { $operations: operations })
     return operations
 }
 
@@ -148,14 +148,12 @@ Monitor.prototype._operations = cadence(function (async) {
     async(function () {
         this._uptime.get(async())
     }, function (response) {
-        console.log('here', response)
         async(function () {
             async.forEach(function (machine) {
                 if (machine.health == null) {
                     return []
                 }
                 async.forEach(function (colleague) {
-                    console.log(colleague)
                     async(function () {
                         this._ua.fetch({
                             url: util.format(this._health, machine.location),
@@ -178,7 +176,7 @@ Monitor.prototype._operations = cadence(function (async) {
     }, function (response) {
         var transformed = transform(response)
         var evaluation = this._evaluate(transformed, Date.now())
-        console.log(require('util').inspect(evaluation, { depth: null }))
+        logger.info('evaluation', { $evaluation: evaluation })
         return [ evaluation ]
     })
 })
