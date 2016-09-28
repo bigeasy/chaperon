@@ -1,5 +1,5 @@
 {
-    "name":                 "reinstate",
+    "name":                 "chaperon",
     "version":              "0.1.1",
     "description":
 
@@ -12,13 +12,13 @@
                             "fifo"
     ],
     "author":               "Alan Gutierrez <alan@prettyrobots.com>",
-    "homepage":             "https://github.com/bigeasy/reinstate",
-    "bugs":                 "https://github.com/bigeasy/reinstate/issues",
+    "homepage":             "https://github.com/bigeasy/chaperon",
+    "bugs":                 "https://github.com/bigeasy/chaperon/issues",
     "license":              "MIT",
     "repository":
     {
                             "type": "git",
-                            "url": "http://github.com/bigeasy/reinstate.git"
+                            "url": "http://github.com/bigeasy/chaperon.git"
     },
     "dependencies":
     {
@@ -36,11 +36,6 @@
     {
                             "inlet":                        "2.0.x",
                             "proof":                        "1.1.x"
-    },
-    "main":                 "reinstate.bin",
-    "bin":
-    {
-                            "reinstate":                    "reinstate.bin.js"
     },
     "scripts":
     {
