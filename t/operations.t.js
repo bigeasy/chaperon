@@ -1,16 +1,16 @@
 require('proof/redux')(5, prove)
 
 function prove (assert) {
-    var Monitor = require('../monitor')
+    var Chaperon = require('../chaperon')
     var transform = require('../transform')
-    var monitor = new Monitor(null, 'http://%s', null)
+    var chaperon = new Chaperon(null, 'http://%s', null)
     var badness = transform(require('./badness'))
-    var operations = monitor._evaluate(badness, 0)
+    var operations = chaperon._evaluate(badness, 0)
     assert(operations, [], 'operations')
     badness[0].colleagues.forEach(function (colleague) {
         colleague.uptime++
     })
-    operations = monitor._evaluate(badness, 1000)
+    operations = chaperon._evaluate(badness, 1000)
     assert(operations,
 [ [ { url: 'http://10.2.91.7:8486' },
     { url: '/bootstrap',
@@ -52,12 +52,12 @@ function prove (assert) {
             colleagueId: 'emissary-nest-fhz08' } } } ] ],
     'operations')
     var recovering = transform(require('./recovering'))
-    var operations = monitor._evaluate(recovering, 0)
+    var operations = chaperon._evaluate(recovering, 0)
     assert(operations, [], 'operations')
     recovering[0].colleagues.forEach(function (colleague) {
         colleague.uptime++
     })
-    operations = monitor._evaluate(recovering, 1000)
+    operations = chaperon._evaluate(recovering, 1000)
     assert(operations, [], 'operations')
     var immigration =
 { mingle:
@@ -108,11 +108,11 @@ function prove (assert) {
         islandId: null,
         government: null } } }
     immigration = transform(immigration)
-    operations = monitor._evaluate(immigration, 0)
+    operations = chaperon._evaluate(immigration, 0)
     immigration[0].colleagues.forEach(function (colleague) {
         colleague.uptime++
     })
-    operations = monitor._evaluate(immigration, 1000)
+    operations = chaperon._evaluate(immigration, 1000)
     assert(operations,
 [ [ { url: 'http://10.2.30.4:8486' },
     { url: '/join',

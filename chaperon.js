@@ -10,7 +10,7 @@ var transform = require('./transform')
 var concat = [].concat
 var log = logger.trace.bind(logger)
 
-function Monitor (ua, url, uptime, health) {
+function Chaperon (ua, url, uptime, health) {
     this._ua = ua
     this._url = url
     this._uptime = uptime
@@ -21,7 +21,7 @@ function Monitor (ua, url, uptime, health) {
     this._health = health
 }
 
-Monitor.prototype._steadfast = function  (previous, next) {
+Chaperon.prototype._steadfast = function  (previous, next) {
     next = next.sort(function (a, b) {
         return a.key < b.key ? -1 : a.key > b.key ? 1 : 0
     })
@@ -36,7 +36,7 @@ Monitor.prototype._steadfast = function  (previous, next) {
 // seconds, then if we have an unrecoverable Paxos island, let's reboot the
 // consensus, otherwise look for machines that are not part of stable island..
 
-Monitor.prototype._evaluate = function (islands, now) {
+Chaperon.prototype._evaluate = function (islands, now) {
     var operations = []
     var current = concat.apply([], islands.map(function (island) {
         return island.colleagues.map(function (colleague) {
@@ -133,7 +133,7 @@ Monitor.prototype._evaluate = function (islands, now) {
     return operations
 }
 
-Monitor.prototype._operate = cadence(function (async, operations) {
+Chaperon.prototype._operate = cadence(function (async, operations) {
     async.map(function (operation) {
         async(function () {
             this._ua.fetch(operation, { log: log, nullify: true }, async())
@@ -143,7 +143,7 @@ Monitor.prototype._operate = cadence(function (async, operations) {
     })(operations)
 })
 
-Monitor.prototype._operations = cadence(function (async) {
+Chaperon.prototype._operations = cadence(function (async) {
     var colleagues = {}
     async(function () {
         this._uptime.get(async())
@@ -181,7 +181,7 @@ Monitor.prototype._operations = cadence(function (async) {
     })
 })
 
-Monitor.prototype.check = cadence(function (async) {
+Chaperon.prototype.check = cadence(function (async) {
     async(function () {
         this._operations(async())
     }, function (operations) {
@@ -189,4 +189,4 @@ Monitor.prototype.check = cadence(function (async) {
     })
 })
 
-module.exports = Monitor
+module.exports = Chaperon

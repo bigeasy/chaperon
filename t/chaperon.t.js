@@ -1,8 +1,8 @@
 require('proof/redux')(2, require('cadence')(prove))
 
 function prove (async, assert) {
-    var Monitor = require('../monitor')
-    var monitor
+    var Chaperon = require('../chaperon')
+    var chaperon
     var Dispatcher = require('inlet/dispatcher')
     var UserAgent = require('vizsla')
     var cadence = require('cadence')
@@ -57,16 +57,16 @@ function prove (async, assert) {
     var ua = new UserAgent(service.dispatcher.createWrappedDispatcher())
     var Uptime = require('mingle.uptime')
     var uptime = new Uptime('http://127.0.0.1:8080/discover', 'http://%s/colleagues', ua)
-    var monitor = new Monitor(ua, 'http://%s', uptime, 'http://%s/health')
+    var chaperon = new Chaperon(ua, 'http://%s', uptime, 'http://%s/health')
 
     async(function () {
-        monitor._operate([{ url: 'http://127.0.0.1:8080/dummy' }], async())
+        chaperon._operate([{ url: 'http://127.0.0.1:8080/dummy' }], async())
     }, function (results) {
         assert(results, [{ called: true }], 'operate')
-        monitor._operations(async())
+        chaperon._operations(async())
     }, function (operations) {
         assert(operations, [], 'operations')
-        monitor.check(async())
+        chaperon.check(async())
     })
 
 }
