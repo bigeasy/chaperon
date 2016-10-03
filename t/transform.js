@@ -12,7 +12,7 @@
         { instanceId: 0,
           colleagues: [ { islandName: 'memento', colleagueId: '1' } ] } },
     colleagues:
-     [ { uptime: 117914,
+     [ { startedAt: 14750233770000,
          requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
          islandName: 'memento',
          colleagueId: '1',
@@ -60,7 +60,7 @@ module.exports = {
     colleagues: {
         '[bucketizer]emissary-nest-fhz08':
         {
-            uptime: 685438,
+            startedAt: 1475023391,
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             islandName: 'bucketizer',
             islandId: null,
@@ -69,7 +69,7 @@ module.exports = {
         },
         '[bucketizer]emissary-nest-0kq4o':
         {
-            uptime: 772647,
+            startedAt: 1475023430,
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             islandName: 'bucketizer',
             islandId: 1467398192058,
@@ -84,7 +84,7 @@ module.exports = {
         },
         '[bucketizer]emissary-nest-21qhh':
         {
-            uptime: 691602,
+            startedAt: 1475023442,
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             islandName: 'bucketizer',
             islandId: 1467398192058,

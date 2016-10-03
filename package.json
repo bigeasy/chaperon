@@ -23,20 +23,21 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "arguable":                     "4.0.x",
+                            "arguable":                     "4.3.x",
                             "cadence":                      "1.0.x",
                             "isochronous":                  "1.0.x",
                             "mingle.uptime":                "0.1.x",
                             "monotonic":                    "2.0.x",
                             "prolific.logger":              "2.0.x",
-                            "prolific.shuttle":             "4.0.x",
-                            "vizsla":                       "2.0.x"
+                            "prolific.shuttle":             "7.0.x"
     },
     "devDependencies":
     {
                             "inlet":                        "2.0.x",
-                            "proof":                        "1.1.x"
+                            "proof":                        "1.2.x",
+                            "vizsla":                       "2.0.x"
     },
+    "main": "chaperon",
     "scripts":
     {
                             "test": "proof platform win32 && proof test */*.t.js || t/test"

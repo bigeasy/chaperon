@@ -1,4 +1,4 @@
-require('proof/redux')(2, require('cadence')(prove))
+require('proof/redux')(1, require('cadence')(prove))
 
 function prove (async, assert) {
     var Chaperon = require('../chaperon')
@@ -30,23 +30,22 @@ function prove (async, assert) {
             colleagues:
             [{
                 islandName: 'bucketizer',
-                colleagueId: 'emissary-nest-0kq4o'
+                colleagueId: 'colleague-1',
             }]
         }
     })
 
     Service.prototype.health = cadence(function (async) {
-        console.log("FALLLLDSFS")
         return {
-            uptime: 772647,
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
-            islandName: 'bucketizer',
+            islandName: 'island',
             islandId: 1467398192058,
-            colleagueId: 'emissary-nest-0kq4o',
+            startedAt: 1467398192058,
+            colleagueId: 'colleague-1',
             government:
             {
-                majority: [ 'emissary-nest-fhz08', 'emissary-nest-21qhh' ],
-                minority: [ 'emissary-nest-0kq4o' ],
+                majority: [ 'colleague-1', 'colleague-2' ],
+                minority: [ 'colleague-3' ],
                 constituents: [],
                 promise: '4/0'
             }
@@ -57,16 +56,18 @@ function prove (async, assert) {
     var ua = new UserAgent(service.dispatcher.createWrappedDispatcher())
     var Uptime = require('mingle.uptime')
     var uptime = new Uptime('http://127.0.0.1:8080/discover', 'http://%s/colleagues', ua)
-    var chaperon = new Chaperon(ua, 'http://%s', uptime, 'http://%s/health')
+    var chaperon = new Chaperon(ua, uptime, 'http://%s/health')
 
     async(function () {
-        chaperon._operate([{ url: 'http://127.0.0.1:8080/dummy' }], async())
+        chaperon.action({
+            body: {
+                colleagueId: 'colleague-1',
+                islandName: 'island',
+                islandId: 1467398192058,
+                startedAt: 1467398192058
+            }
+        }, async())
     }, function (results) {
-        assert(results, [{ called: true }], 'operate')
-        chaperon._operations(async())
-    }, function (operations) {
-        assert(operations, [], 'operations')
-        chaperon.check(async())
+        assert(results, { name: 'unstable', vargs: [] }, 'action')
     })
-
 }
