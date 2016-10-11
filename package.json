@@ -37,7 +37,7 @@
                             "proof":                        "1.2.x",
                             "vizsla":                       "2.0.x"
     },
-    "main": "chaperon",
+    "main":                 "chaperon",
     "scripts":
     {
                             "test": "proof platform win32 && proof test */*.t.js || t/test"
