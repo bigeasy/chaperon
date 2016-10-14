@@ -40,7 +40,7 @@
     "main":                 "chaperon",
     "bin":
     {
-                            "chaperon":                     "chaperon.bin"
+                            "chaperon":                     "chaperon.bin.js"
     },
     "scripts":
     {
