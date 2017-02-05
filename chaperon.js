@@ -1,3 +1,15 @@
+// Last time you came back to this project, you couldn't understand why it is a
+// separate process and not a library run by the Colleague. No reason. Only that
+// it is doing something rather different, so it may as well run in it's own
+// process, because with Node.js processes are like threads. If there is a
+// problem with discovery, in production, we'll see problems with this process
+// and not with the colleague or the procsses it monitors.
+//
+// It's seperate because it is a seperate utility. It runs in it's own process.
+// It uses HTTP because that's our default RPC protocol.
+
+//
+
 // TODO Things like this need a careful name auditing.
 // TODO What is that supposed to mean; "name auditing?"
 var cadence = require('cadence')
