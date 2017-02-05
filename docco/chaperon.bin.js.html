@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>chaperon.bin.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="chaperon.bin.js.html">
+                  chaperon.bin.js
+                </a>
+
+
+                <a class="source" href="chaperon.js.html">
+                  chaperon.js
+                </a>
+
+
+                <a class="source" href="immigration.js.html">
+                  immigration.js
+                </a>
+
+
+                <a class="source" href="transform.js.html">
+                  transform.js
+                </a>
+
+
+                <a class="source" href="unrecoverable.js.html">
+                  unrecoverable.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>chaperon.bin.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-meta">#!/usr/bin/env node</span>
+
+<span class="hljs-comment">/*
+
+    ___ usage ___ en_US ___
+    compassion colleague child &lt;child options&gt;
+
+    options:
+
+        -b, --bind &lt;address:port&gt;
+            address and port to bind to
+
+        -d, --discovery &lt;url&gt;
+            discovery url
+
+        -c, --colleagues &lt;url&gt;
+            colleagues url pattern
+
+        -H, --health &lt;url pattern&gt;
+            health url pattern
+
+        --help
+            display help message
+
+    ___ $ ___ en_US ___
+
+        bind is required:
+            the `--bind` argument is a required argumen
+
+        name is required:
+            the `--name` argument is a required argumen
+    ___ . ___
+
+ */</span>
+<span class="hljs-built_in">require</span>(<span class="hljs-string">'arguable'</span>)(<span class="hljs-built_in">module</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, program</span>) </span>{
+    <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>)
+
+    <span class="hljs-keyword">var</span> Shuttle = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.shuttle'</span>)
+    <span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
+    <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>)
+
+    <span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.logger'</span>).createLogger(<span class="hljs-string">'chaperon'</span>)
+
+    <span class="hljs-keyword">var</span> shuttle = Shuttle.shuttle(program, logger)
+
+    program.helpIf(program.ultimate.help)
+    program.required(<span class="hljs-string">'discovery'</span>, <span class="hljs-string">'health'</span>, <span class="hljs-string">'bind'</span>)
+    program.validate(<span class="hljs-built_in">require</span>(<span class="hljs-string">'arguable/bindable'</span>), <span class="hljs-string">'bind'</span>)
+
+    <span class="hljs-keyword">var</span> bind = program.ultimate.bind
+
+    <span class="hljs-keyword">var</span> Vizsla = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vizsla'</span>)
+    <span class="hljs-keyword">var</span> Chaperon = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./chaperon'</span>)
+    <span class="hljs-keyword">var</span> Uptime = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mingle.uptime'</span>)
+    <span class="hljs-keyword">var</span> uptime = <span class="hljs-keyword">new</span> Uptime(program.ultimate.discovery, program.ultimate.colleagues, <span class="hljs-keyword">new</span> Vizsla)
+    <span class="hljs-keyword">var</span> chaperon = <span class="hljs-keyword">new</span> Chaperon(<span class="hljs-keyword">new</span> Vizsla, uptime, program.ultimate.health)
+
+    <span class="hljs-keyword">var</span> Isochronous = <span class="hljs-built_in">require</span>(<span class="hljs-string">'isochronous'</span>)
+    <span class="hljs-keyword">var</span> isochronous = <span class="hljs-keyword">new</span> Isochronous({
+        <span class="hljs-attr">operation</span>: { <span class="hljs-attr">object</span>: chaperon, <span class="hljs-attr">method</span>: <span class="hljs-string">'health'</span> },
+        <span class="hljs-attr">interval</span>: <span class="hljs-number">30000</span>
+    })
+    isochronous.run(abend)
+
+    program.on(<span class="hljs-string">'shutdown'</span>, isochronous.stop.bind(isochronous))
+    program.on(<span class="hljs-string">'shutdown'</span>, shuttle.close.bind(shuttle))
+
+    logger.info(<span class="hljs-string">'started'</span>, { <span class="hljs-attr">parameters</span>: program.ultimate, <span class="hljs-attr">$vargs</span>: program.vargs })
+
+    <span class="hljs-keyword">var</span> server = http.createServer(chaperon.dispatcher.createWrappedDispatcher())
+    server.listen(bind.port, bind.address, <span class="hljs-keyword">async</span>())
+    program.on(<span class="hljs-string">'SIGINT'</span>, server.close.bind(server))
+}))
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
