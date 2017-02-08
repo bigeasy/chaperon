@@ -3,26 +3,27 @@ var assert = require('assert')
 
 module.exports = function (colleagues) {
     assert(colleagues.length, 'colleagues required')
-    var islandId = colleagues.filter(function (colleague) {
+    var republic = colleagues.filter(function (colleague) {
 // TODO: Seems like a bad condition, report unhealthy until naturalized.
-        return colleague.islandId != null
+        return colleague.republic != null
             && colleague.promise != '0/0'
     }).map(function (colleague) {
-        return colleague.islandId
+        return colleague.republic
     }).sort(function (a, b) {
         return +a - +b
     }).pop()
-    if (islandId == null) {
+    if (republic == null) {
         return true
     }
-    var islanders = colleagues.filter(function (colleague) {
-        return colleague.islandId == islandId
+    var republicans = colleagues.filter(function (colleague) {
+        return colleague.republic == republic
             && colleague.promise != '0/0'
     })
-    var parliament = islanders.sort(function (a, b) {
+    var government = republicans.sort(function (a, b) {
         return Monotonic.compare(b.promise, a.promise)
-    })[0].parliament
-    return islanders.filter(function (colleague) {
-        return ~parliament.indexOf(colleague.colleagueId)
+    })[0].government
+    var parliament = government.majority.concat(government.minority)
+    return republicans.filter(function (colleague) {
+        return ~parliament.indexOf(colleague.id)
     }).length < Math.ceil(parliament.length / 2)
 }

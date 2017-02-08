@@ -10,14 +10,14 @@
         -b, --bind <address:port>
             address and port to bind to
 
-        -d, --discovery <url>
+        -m, --mingle <url>
             discovery url
 
-        -c, --colleagues <url>
-            colleagues url pattern
+        -C, --conduit <url>
+            conduit health url pattern
 
-        -H, --health <url pattern>
-            health url pattern
+        -c, --colleague <url pattern>
+            colleague health url pattern
 
         --help
             display help message
@@ -44,7 +44,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var shuttle = Shuttle.shuttle(program, logger)
 
     program.helpIf(program.ultimate.help)
-    program.required('discovery', 'health', 'bind')
+    program.required('mingle', 'conduit', 'colleague', 'bind')
     program.validate(require('arguable/bindable'), 'bind')
 
     var bind = program.ultimate.bind
@@ -52,10 +52,22 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Vizsla = require('vizsla')
     var Chaperon = require('./chaperon')
     var Uptime = require('mingle.uptime')
-    var uptime = new Uptime(program.ultimate.discovery, program.ultimate.colleagues, new Vizsla)
-    var chaperon = new Chaperon(new Vizsla, uptime, program.ultimate.health)
+    var uptime = new Uptime(program.ultimate.discovery, program.ultimate.health, new Vizsla)
 
-    var Isochronous = require('isochronous')
+    var Colleagues = require('./colleagues')
+
+    var colleagues = new Colleagues({
+        ua: new Vizsla,
+        mingle: program.ultimate.mingle,
+        conduit: program.ultimate.conduit,
+        colleague: program.ultimate.colleague
+    })
+
+    var chaperon = new Chaperon({
+        colleagues: colleagues,
+        stableAfter: 30 * 1000
+    })
+
     var isochronous = new Isochronous({
         operation: { object: chaperon, method: 'health' },
         interval: 30000
@@ -69,5 +81,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var server = http.createServer(chaperon.dispatcher.createWrappedDispatcher())
     server.listen(bind.port, bind.address, async())
-    program.on('SIGINT', server.close.bind(server))
+    destroyer(server)
+    program.on('shutdown', server.destroy.bind(server))
 }))

@@ -23,11 +23,15 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
+                            "ascension":                    "0.0.0",
                             "arguable":                     "4.3.x",
                             "cadence":                      "1.0.x",
                             "isochronous":                  "1.0.x",
-                            "mingle.uptime":                "0.1.x",
+                            "server-destroy": "1.0.1",
+                            "mingle.uptime":                "0.2.x",
+                            "magazine":                     "2.1.x",
                             "monotonic":                    "2.0.x",
+                            "nascent.coalesce":             "0.0.0",
                             "prolific.logger":              "2.0.x",
                             "prolific.shuttle":             "7.0.x"
     },

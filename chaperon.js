@@ -10,28 +10,34 @@
 
 //
 
-// TODO Things like this need a careful name auditing.
-// TODO What is that supposed to mean; "name auditing?"
+// Common utilities.
+var coalesce = require('nascent.coalesce')
+var util = require('util')
+
+var ascension = require('ascension')
+
+// Control-flow utilities.
 var cadence = require('cadence')
+
+var Monotonic = require('monotonic').asString
+
+
 var logger = require('prolific.logger').createLogger('chaperon')
 var unrecoverable = require('./unrecoverable')
-var immigration = require('./immigration')
-var util = require('util')
-var assert = require('assert')
-var transform = require('./transform')
-var concat = [].concat
-var log = logger.trace.bind(logger)
-var Monotonic = require('monotonic').asString
+
+var Uptime = require('mingle.uptime')
+
+// Bind an object to Sencha Connect middleware.
 var Dispatcher = require('inlet/dispatcher')
 
-function Chaperon (ua, uptime, health) {
-    this._ua = ua
-    this._uptime = uptime
-    this._stableAfter = 900
-    this._duraiton = 0
-    this._stability = {}
-    this._health = health
-    this._participating = {}
+// Most-recently used cache.
+var Cache = require('magazine')
+
+function Chaperon (options) {
+    this._colleagues = options.colleagues
+    this._stableAfter = options.stableAfter
+    this._Date = coalesce(options.Date, Date)
+    this._uptimes = new Cache().createMagazine()
     var dispatcher = new Dispatcher(this)
     dispatcher.dispatch('GET /', 'index')
     dispatcher.dispatch('POST /action', 'action')
@@ -43,195 +49,145 @@ Chaperon.prototype.index = cadence(function () {
     return 'Compassion Chaperon API\n'
 })
 
-function Group (groupBy, collection, array) {
-    var groups = []
-    array.forEach(function (element) {
-        var group = groups.filter(function (group) {
+function group (groupBy, collection, list) {
+    var groups = {}, array = []
+    list.forEach(function (element) {
+        var group = array.filter(function (group) {
             return group[groupBy] == element[groupBy]
         }).shift()
         if (!group) {
             group = {}
             group[groupBy] = element[groupBy]
             group[collection] = []
-            groups.push(group)
+            array.push(group)
         }
         group[collection].push(element)
     })
-    this.array = groups
-    this.map = {}
-    this.null = null
-    this.array.forEach(function (group) {
+    groups.array = array
+    groups.map = {}
+    groups.null = null
+    groups.array.forEach(function (group) {
         if (group[groupBy] == null) {
-            this.null = group
+            groups.null = group
         } else {
-            this.map[group[groupBy]] = group
+            groups.map[group[groupBy]] = group
         }
-    }, this)
+    }, groups)
+    return groups
 }
 
-function comparator (keys) {
-    return function (a, b) {
-        var compare = 0
-        for (var i = 0, I = keys.length; i < I; i++) {
-            var key = keys[i]
-            var compare = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0
-            if (compare != 0) {
-                break
-            }
-        }
-        return compare
-    }
-}
+var byStartedAtThenId = ascension([ Number, String ], function (object) {
+    return [ object.startedAt, object.id ]
+})
 
-// If we have been stable in machine count and availablity for more than thirty
-// seconds, then if we have an unrecoverable Paxos island, let's reboot the
-// consensus, otherwise look for machines that are not part of stable island..
-
-Chaperon.prototype._maybeAction = function (colleagues, request, now) {
-    var colleagues = colleagues.filter(function (colleague) {
-        return colleague.islandName = request.islandName
-    })
-    var stablity = this._stability[request.islandName]
-    if (stablity == null) {
-        stablity = this._stability[request.islandName] = { lastChecked: null, previous: [] }
+Chaperon.prototype._action = function (islands, request) {
+    // Get the colleagues for the requested island.
+    if (islands[request.island] == null) {
+        return { name: 'unreachable' }
     }
-    var current = colleagues.slice().map(function (colleague) {
-        return { key: colleague.key, startedAt: colleague.startedAt }
-    }).sort(comparator('key', 'startedAt'))
-    if (current.length == stablity.previous.length
-        && current.filter(function (colleague, index) {
-            return stablity.previous[index] != null
-                && stablity.previous[index].key == colleague.key
-                && stablity.previous[index].startedAt == colleague.startedAt
-        }).length == current.length) {
-        stablity.duration = now - stablity.lastChecked
-    } else {
-        stablity.duration = 0
+    var colleagues = islands[request.island]
+    // See if the colleagues that make up this island have stabilized.
+    var uptime = this._uptimes.get(request.island, new Uptime({ Date: this._Date }))
+    if (uptime.calculate(colleagues) < this._stableAfter) {
+        return { name: 'unstable' }
     }
-    stablity.lastChecked = now
-    stablity.previous = current
-    if (this._stableAfter <= stablity.duration) {
-        return this._action(colleagues, request)
-    } else {
-        return { name: 'unstable', vargs: [] }
-    }
-}
-
-Chaperon.prototype._action = function (colleagues, request) {
+    // Clear out after fifteen minutes.
+    this._uptimes.expire(1000 * 60 * 15)
+    // See if we can find the requesting colleague over the network and make
+    // sure that no other colleague is using its id.
     var instances = colleagues.filter(function (colleague) {
-        return colleague.colleagueId == request.colleagueId
+        return colleague.id == request.id
     })
     switch (instances.length) {
     case 1:
-        if (instances[0].startedAt != null) {
-            if (instances[0].islandId != request.islandId) {
-                return { name: 'garbled', vargs: [] }
-            }
-            return reachable(instances[0])
+        if (instances[0].republic != request.republic) {
+            return { name: 'garbled' }
         }
+        break
     case 0:
-        return { name: 'unreachable', vargs: [] }
+        return { name: 'unreachable' }
     default:
-        return { name: 'duplicates', vargs: [instances] }
+        return { name: 'duplicated' }
+    }
+    // Keeping with our island metaphor, we group an estabished running instance
+    // of Paxos into Republics. If Paxos becomes unrecoverable, we form a new
+    // Republic.
+    //
+    // Check for split brain. Let's hope this doesn't happen. Group the
+    // instances by island id, which is an island lifetime. Check if the
+    // colleagues associated with a specific island lifetime are recoverable.
+    // There should only be one that is recoverable. If there is more than one,
+    // then we have more than one functioning island.
+
+    //
+    var republics = group('republic', 'colleagues', colleagues)
+    var recoverable = republics.array.filter(function (republic) {
+        return republic.republic != null && !unrecoverable(republic.colleagues)
+    }).map(function (republic) {
+        return republic.republic
+    })
+    if (recoverable.length > 1) {
+        logger.error('splitBrain', {
+            $republics: recoverable, $colleagues: colleagues, $request: request
+        })
+        if (request.republic != null && ~recoverable.indexOf(request.republic)) {
+            return { name: 'splitBrain' }
+        } else {
+            return { name: 'unstable' }
+        }
+    }
+    // Looking to join.
+
+    //
+    if (request.republic == null) {
+        if (recoverable.length == 0) {
+            // If there is no island established, it is bootstrapped by the
+            // instance that has been running the longest. If that's not us, we
+            // wait. Note that, yes, two instances can start at the same
+            // millisecond, so let's hope that we detect any sort of split brain
+            // created by that event.
+            var oldest = republics.null.colleagues.sort(byStartedAtThenId).shift()
+            if (oldest.id == request.id) {
+                return { name: 'bootstrap' }
+            }
+            return { name: 'unstable' }
+        }
+        // Find the leader of the current island by first selecting the
+        // colleague with the greated promise and using the leader id
+        // specified in that government to find the leader.
+        var republic = republics.map[recoverable[0]]
+        var leaderId = republic.colleagues.sort(function (a, b) {
+            return Monotonic.compare(b.promise, a.promise)
+        })[0].government.majority[0]
+        var leader = republic.colleagues.filter(function (colleague) {
+            return colleague.id == leaderId
+        }).shift()
+        // Ask that leader to immigrate us.
+        return {
+            name: 'join',
+            republic: leader.republic,
+            leader: {
+                location: leader.location,
+                id: leader.id
+            }
+        }
     }
 
-    function reachable (instance) {
-        var instances = new Group('islandId', 'colleagues', colleagues)
-        instances.array.filter(function (instance) {
-            instance.unrecoverable = instance.islandId == null
-                || unrecoverable(instance.colleagues)
-        })
-        // Check for split brain. Let's hope this doesn't happen. Get all of the
-        // island instances that are recoverable and assert that there is only
-        // one such island instance.
-        var recoverable = instances.array.filter(function (instance) {
-            return ! instance.unrecoverable
-        })
-        if (recoverable.length > 1) {
-            logger.error('splitBrain', { $instances: recoverable })
-            recoverable.forEach(function (instance) { instance.splitBrain = true })
-            if (request.islandId == null) {
-                return { name: 'splitBrain', vargs: [] }
-            } else if (instances.map[request.islandId].splitBrain) {
-                return { name: 'splitBrain', vargs: [] }
-            }
-        }
-        if (request.islandId == null) {
-            if (recoverable.length == 0) {
-                var oldest = instances.null.colleagues.sort(function (a, b) {
-                    return a.startedAt - b.startedAt
-                }).shift()
-                if (oldest.colleagueId == request.colleagueId) {
-                    return { name: 'bootstrap', vargs: [] }
-                } else {
-                    return { name: 'unstable', vargs: [] }
-                }
-            } else {
-                var leaderId = recoverable[0].colleagues.sort(function (a, b) {
-                    return Monotonic.compare(b.promise, a.promise)
-                })[0].parliament[0]
-                var leader = recoverable[0].colleagues.filter(function (colleague) {
-                    return colleague.colleagueId == leaderId
-                }).shift()
-                return {
-                    name: 'join',
-                    vargs: [{
-                        location: leader.location,
-                        islandId: leader.islandId,
-                        islandName: leader.islandName,
-                        colleagueId: leader.colleagueId
-                    }]
-                }
-            }
-        } else if (instances.map[request.islandId].unrecoverable) {
-            return { name: 'unrecoverable', vargs: [] }
-        } else {
-            return { name: 'recoverable', vargs: [] }
-        }
+    if (recoverable.length == 0) {
+        // We are part of an island that is unrecoverable.
+        return { name: 'unrecoverable' }
     }
+
+    // We are up and running.
+    return { name: 'recoverable' }
 }
 
 Chaperon.prototype.action = cadence(function (async, request) {
     var colleagues = {}
     async(function () {
-        this._uptime.get(async())
-    }, function (response) {
-        async(function () {
-            async.forEach(function (machine) {
-                if (machine.health == null) {
-                    return []
-                }
-                async.forEach(function (colleague) {
-                    async(function () {
-                        this._ua.fetch({
-                            url: util.format(this._health, machine.location),
-                            post: colleague,
-                            log: log,
-                            nullify: true
-                        }, async())
-                    }, function (body) {
-                        if (body != null) {
-                            var key = '[' + colleague.islandName + ']' + colleague.colleagueId
-                            colleagues[key] = body
-                        }
-                    })
-                })(machine.health.colleagues)
-            })(response.machines)
-        }, function () {
-            return {
-                mingle: response,
-                colleagues: colleagues
-            }
-        })
-    }, function (response) {
-        var transformed = transform(response)
-        logger.trace('transform', { $request: request.body, $response: response, $transformed: transformed })
-        var action = this._maybeAction(transformed, request.body, Date.now())
-        logger.trace('action', {
-            action: { name: action.name, $vargs: action.vargs },
-            $colleague: request.body
-        })
-        return action
+        this._colleagues.get(async())
+    }, function (colleagues) {
+        return this._action(group('island', 'colleagues', colleagues).map, request)
     })
 })
 
