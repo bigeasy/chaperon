@@ -49,12 +49,12 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var bind = program.ultimate.bind
 
+    var Isochronous = require('isochronous')
     var Vizsla = require('vizsla')
     var Chaperon = require('./chaperon')
-    var Uptime = require('mingle.uptime')
-    var uptime = new Uptime(program.ultimate.discovery, program.ultimate.health, new Vizsla)
-
     var Colleagues = require('./colleagues')
+
+    var destroyer = require('server-destroy')
 
     var colleagues = new Colleagues({
         ua: new Vizsla,
