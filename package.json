@@ -23,7 +23,7 @@
     "dependencies":
     {
                             "abend":                        "1.0.x",
-                            "arguable":                     "4.3.x",
+                            "arguable":                     "5.0.x",
                             "ascension":                    "0.0.0",
                             "cadence":                      "1.0.x",
                             "isochronous":                  "1.0.x",
