@@ -35,7 +35,7 @@ var Cache = require('magazine')
 
 function Chaperon (options) {
     this._colleagues = options.colleagues
-    this._stableAfter = options.stableAfter
+    this._stableAfter = 2000 || options.stableAfter
     this._Date = coalesce(options.Date, Date)
     this._uptimes = new Cache().createMagazine()
     var dispatcher = new Dispatcher(this)
@@ -85,17 +85,17 @@ Chaperon.prototype._action = function (islands, request) {
     if (islands[request.island] == null) {
         return { name: 'unreachable' }
     }
-    var colleagues = islands[request.island]
+    var island = islands[request.island]
     // See if the colleagues that make up this island have stabilized.
-    var uptime = this._uptimes.get(request.island, new Uptime({ Date: this._Date }))
-    if (uptime.calculate(colleagues) < this._stableAfter) {
+    var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
+    if (uptime.calculate(island.colleagues) < this._stableAfter) {
         return { name: 'unstable' }
     }
     // Clear out after fifteen minutes.
     this._uptimes.expire(1000 * 60 * 15)
     // See if we can find the requesting colleague over the network and make
     // sure that no other colleague is using its id.
-    var instances = colleagues.filter(function (colleague) {
+    var instances = island.colleagues.filter(function (colleague) {
         return colleague.id == request.id
     })
     switch (instances.length) {
@@ -120,7 +120,8 @@ Chaperon.prototype._action = function (islands, request) {
     // then we have more than one functioning island.
 
     //
-    var republics = group('republic', 'colleagues', colleagues)
+    var republics = group('republic', 'colleagues', island.colleagues)
+    console.log('republics', republics)
     var recoverable = republics.array.filter(function (republic) {
         return republic.republic != null && !unrecoverable(republic.colleagues)
     }).map(function (republic) {
@@ -187,7 +188,10 @@ Chaperon.prototype.action = cadence(function (async, request) {
     async(function () {
         this._colleagues.get(async())
     }, function (colleagues) {
-        return this._action(group('island', 'colleagues', colleagues).map, request)
+        console.log(request.body, colleagues)
+        var action = this._action(group('island', 'colleagues', colleagues).map, request.body)
+        console.log(action)
+        return action
     })
 })
 

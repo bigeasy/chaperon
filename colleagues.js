@@ -27,7 +27,7 @@ function Colleagues (options) {
 // Fetch an array of all the active colleagues.
 
 //
-Colleagues.prototype.fetch = cadence(function (async) {
+Colleagues.prototype.get = cadence(function (async) {
     var colleagues = []
     async(function () {
         this._ua.fetch({ url: this._mingle, nullify: true }, async())
