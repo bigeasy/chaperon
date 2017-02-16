@@ -26,6 +26,7 @@
                             "arguable":                     "5.0.x",
                             "ascension":                    "0.0.0",
                             "cadence":                      "1.0.x",
+                            "inlet":                        "2.0.x",
                             "isochronous":                  "1.0.x",
                             "magazine":                     "3.0.x",
                             "mingle.uptime":                "0.2.x",
@@ -38,7 +39,6 @@
     },
     "devDependencies":
     {
-                            "inlet":                        "2.0.x",
                             "proof":                        "1.2.x"
     },
     "main":                 "chaperon",
