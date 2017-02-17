@@ -124,7 +124,6 @@ Chaperon.prototype._action = function (colleagues, request) {
 
     //
     var republics = group('republic', 'colleagues', island.colleagues)
-    console.log('republics', republics)
     var recoverable = republics.array.filter(function (republic) {
         return republic.republic != null && !unrecoverable(republic.colleagues)
     }).map(function (republic) {
@@ -154,10 +153,8 @@ Chaperon.prototype._action = function (colleagues, request) {
             if (oldest.id == request.id) {
                 return {
                     name: 'bootstrap',
-                    island: request.island,
-                    self: {
-                        url: instance.url,
-                        id: instance.id
+                    url: {
+                        self: instance.url
                     }
                 }
             }
@@ -176,15 +173,10 @@ Chaperon.prototype._action = function (colleagues, request) {
         // Ask that leader to immigrate us.
         return {
             name: 'join',
-            island: request.island,
             republic: leader.republic,
-            self: {
-                url: instance.url,
-                id: instance.id
-            },
-            leader: {
-                url: leader.url,
-                id: leader.id
+            url: {
+                self: instance.url,
+                leader: leader.url
             }
         }
     }

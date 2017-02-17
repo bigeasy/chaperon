@@ -231,10 +231,8 @@ function prove (async, assert) {
             id: '4'
         }), {
             name: 'bootstrap',
-            island: 'island',
-            self: {
-                url: 'http://127.0.0.1:8080/island/4/',
-                id: '4'
+            url: {
+                self: 'http://127.0.0.1:8080/island/4/'
             }
         }, 'bootstrap')
         // Island needs a bootstrap, but not by us because we're older than
@@ -309,15 +307,10 @@ function prove (async, assert) {
             id: '4'
         }), {
             name: 'join',
-            island: 'island',
             republic: 0,
-            self: {
-                url: 'http://127.0.0.1:8080/island/4/',
-                id: '4'
-            },
-            leader: {
-                url: 'http://127.0.0.1:8080/island/1/',
-                id: '1'
+            url: {
+                self: 'http://127.0.0.1:8080/island/4/',
+                leader: 'http://127.0.0.1:8080/island/1/'
             }
         }, 'join')
         // Unrecoverable.
