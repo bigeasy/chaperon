@@ -35,7 +35,7 @@ var Cache = require('magazine')
 
 function Chaperon (options) {
     this._colleagues = options.colleagues
-    this._stableAfter = 2000 || options.stableAfter
+    this._stableAfter = options.stableAfter || 2000
     this._Date = coalesce(options.Date, Date)
     this._uptimes = new Cache().createMagazine()
     var dispatcher = new Dispatcher(this)
@@ -80,7 +80,9 @@ var byStartedAtThenId = ascension([ Number, String ], function (object) {
     return [ object.startedAt, object.id ]
 })
 
-Chaperon.prototype._action = function (islands, request) {
+Chaperon.prototype._action = function (colleagues, request) {
+    // Group into islands.
+    var islands = group('island', 'colleagues', colleagues).map
     // Get the colleagues for the requested island.
     if (islands[request.island] == null) {
         return { name: 'unreachable' }
@@ -109,6 +111,7 @@ Chaperon.prototype._action = function (islands, request) {
     default:
         return { name: 'duplicated' }
     }
+    var instance = instances.shift()
     // Keeping with our island metaphor, we group an estabished running instance
     // of Paxos into Republics. If Paxos becomes unrecoverable, we form a new
     // Republic.
@@ -149,7 +152,14 @@ Chaperon.prototype._action = function (islands, request) {
             // created by that event.
             var oldest = republics.null.colleagues.sort(byStartedAtThenId).shift()
             if (oldest.id == request.id) {
-                return { name: 'bootstrap' }
+                return {
+                    name: 'bootstrap',
+                    island: request.island,
+                    self: {
+                        url: instance.url,
+                        id: instance.id
+                    }
+                }
             }
             return { name: 'unstable' }
         }
@@ -166,9 +176,14 @@ Chaperon.prototype._action = function (islands, request) {
         // Ask that leader to immigrate us.
         return {
             name: 'join',
+            island: request.island,
             republic: leader.republic,
+            self: {
+                url: instance.url,
+                id: instance.id
+            },
             leader: {
-                location: leader.location,
+                url: leader.url,
                 id: leader.id
             }
         }
@@ -188,9 +203,8 @@ Chaperon.prototype.action = cadence(function (async, request) {
     async(function () {
         this._colleagues.get(async())
     }, function (colleagues) {
-        console.log(request.body, colleagues)
-        var action = this._action(group('island', 'colleagues', colleagues).map, request.body)
-        console.log(action)
+        var action = this._action(colleagues, request.body)
+        logger.info('action', { $action: action })
         return action
     })
 })

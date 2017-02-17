@@ -13,7 +13,7 @@ function prove (async, assert) {
         dispatcher.dispatch('GET /dummy', 'dummy')
         dispatcher.dispatch('GET /discover', 'discover')
         dispatcher.dispatch('GET /conduit', 'conduit')
-        dispatcher.dispatch('GET /island/1/health', 'colleague')
+        dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
         this.dispatcher = dispatcher
     }
 
@@ -47,18 +47,18 @@ function prove (async, assert) {
     var colleagues = new Colleagues({
         ua: ua,
         mingle: 'http://127.0.0.1:8080/discover',
-        conduit: 'http://%s/conduit',
-        colleague: 'http://%s%s/health'
+        conduit: 'http://%s/conduit'
     })
 
     async(function () {
-        colleagues.fetch(async())
+        colleagues.get(async())
     }, function (colleagues) {
         assert(colleagues, [{
             island: 'island',
             republic: 1,
             startedAt: 1,
             id: '1',
+            url: 'http://10.2.77.6:8486/conduit/island/1/',
             government: {
                 majority: [ '1', '2' ],
                 minority: [ '3' ],

@@ -5,6 +5,7 @@
 // Common utilities.
 var url = require('url')
 var util = require('util')
+var path_ = require('path')
 var coalesce = require('nascent.coalesce')
 
 // Control-flow utilities.
@@ -38,18 +39,21 @@ Colleagues.prototype.get = cadence(function (async) {
                 this._ua.fetch({ url: conduitUrl, nullify: true }, async())
             }, function (conduit) {
                 async.map(function (path) {
-                    var colleagueUrl = util.format(this._colleague, host, path)
+                    var parsed = url.parse(url.resolve(conduitUrl + '/', './' +  path + '/'))
+                    parsed.path = parsed.pathname = path_.normalize(String(parsed.pathname))
+                    var colleagueUrl = url.format(parsed)
                     async(function () {
-                        this._ua.fetch({ url: colleagueUrl, nullify: true }, async())
+                        this._ua.fetch({ url: url.resolve(colleagueUrl, 'health'), nullify: true }, async())
                     }, function (got) {
                         if (got == null) {
                             return
                         }
                         colleagues.push({
-                            startedAt: got.startedAt,
-                            id: got.id,
                             island: got.island,
                             republic: got.republic,
+                            id: got.id,
+                            startedAt: got.startedAt,
+                            url: colleagueUrl,
                             government: got.government
                         })
                     })

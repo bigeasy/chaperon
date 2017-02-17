@@ -23,382 +23,372 @@ function prove (async, assert) {
         assert(health, {
             http: { occupied: 0, waiting: 0, rejecting: 0, turnstiles: 24 }
         }, 'index')
-        chaperon.action({}, async())
+        chaperon.action({ body: {} }, async())
     }, function (results) {
         assert(results, { name: 'unreachable' }, 'no islands')
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 1
-            }]
-        }, {
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 1
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         }), { name: 'unstable' }, 'unstable')
         now++
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 1
-            }] }, {
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 1
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         }), { name: 'garbled' }, 'garbled')
-        chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '1',
-                republic: 0
-            }]
+        chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0
         }, {
+            island: 'island',
+            id: '1',
+            republic: 0
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         })
         now++
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '1',
-                republic: 0
-            }]
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0
         }, {
+            island: 'island',
+            id: '1',
+            republic: 0
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         }), { name: 'duplicated' }, 'duplicated')
-        chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '2',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '3',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0
         }, {
+            island: 'island',
+            id: '2',
+            republic: 0
+        }, {
+            island: 'island',
+            id: '3',
+            republic: 0
+        }, {
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         })
         now++
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '2',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '3',
-                republic: 0
-            }, {
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0
         }, {
+            island: 'island',
+            id: '2',
+            republic: 0
+        }, {
+            island: 'island',
+            id: '3',
+            republic: 0
+        }, {
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: 0,
             id: '5'
         }), { name: 'unreachable' }, 'unreachable')
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0,
-                government: {
-                    majority: [ '1' ],
-                    minority: []
-                }
-            }, {
-                promise: '1/0',
-                island: 'island',
-                id: '2',
-                republic: 1,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                promise: '2/0',
-                island: 'island',
-                id: '3',
-                republic: 1,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
         }, {
+            promise: '1/0',
+            island: 'island',
+            id: '2',
+            republic: 1,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            promise: '2/0',
+            island: 'island',
+            id: '3',
+            republic: 1,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         }), { name: 'splitBrain' }, 'split brain')
-        assert(chaperon._action({
-            island: [{
-                island: 'island',
-                id: '1',
-                republic: 0,
-                government: {
-                    majority: [ '1' ],
-                    minority: []
-                }
-            }, {
-                promise: '1/0',
-                island: 'island',
-                id: '2',
-                republic: 1,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                promise: '2/0',
-                island: 'island',
-                id: '3',
-                republic: 1,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            island: 'island',
+            id: '1',
+            republic: 0,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
         }, {
+            promise: '1/0',
+            island: 'island',
+            id: '2',
+            republic: 1,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            promise: '2/0',
+            island: 'island',
+            id: '3',
+            republic: 1,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: null,
             id: '4'
         }), { name: 'unstable' }, 'split brain unstable')
-        assert(chaperon._action({
-            island: [{
-                startedAt: 1,
-                island: 'island',
-                id: '1',
-                republic: null,
-                government: {
-                    majority: [ '1' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 1,
-                promise: '1/0',
-                island: 'island',
-                id: '2',
-                republic: null,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 1,
-                promise: '2/0',
-                island: 'island',
-                id: '3',
-                republic: null,
-                government: {
-                    majority: [ '2' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 0,
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            startedAt: 1,
+            island: 'island',
+            id: '1',
+            republic: null,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
         }, {
+            startedAt: 1,
+            promise: '1/0',
+            island: 'island',
+            id: '2',
+            republic: null,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            startedAt: 1,
+            promise: '2/0',
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: {
+                majority: [ '2' ],
+                minority: []
+            }
+        }, {
+            startedAt: 0,
+            island: 'island',
+            id: '4',
+            url: 'http://127.0.0.1:8080/island/4/',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: null,
             id: '4'
-        }), { name: 'bootstrap' }, 'bootstrap')
+        }), {
+            name: 'bootstrap',
+            island: 'island',
+            self: {
+                url: 'http://127.0.0.1:8080/island/4/',
+                id: '4'
+            }
+        }, 'bootstrap')
         // Island needs a bootstrap, but not by us because we're older than
         // everyone else.
-        assert(chaperon._action({
-            island: [{
-                startedAt: 1,
-                island: 'island',
-                id: '1',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 1,
-                promise: '1/0',
-                island: 'island',
-                id: '2',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 1,
-                promise: '2/0',
-                island: 'island',
-                id: '3',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 2,
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            startedAt: 1,
+            island: 'island',
+            id: '1',
+            republic: null,
+            government: null
         }, {
+            startedAt: 1,
+            promise: '1/0',
+            island: 'island',
+            id: '2',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 1,
+            promise: '2/0',
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 2,
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: null,
             id: '4'
         }), { name: 'unstable' }, 'bootstrap unstable')
         // Join an existing island.
-        assert(chaperon._action({
-            island: [{
-                startedAt: 1,
-                location: 'x',
-                promise: '4/0',
-                island: 'island',
-                id: '1',
-                republic: 0,
-                government: {
-                    majority: [ '1' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 1,
-                promise: '3/0',
-                island: 'island',
-                id: '2',
-                republic: 0,
-                government: null
-            }, {
-                startedAt: 1,
-                island: 'island',
-                id: '3',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 2,
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            startedAt: 1,
+            location: 'x',
+            promise: '4/0',
+            island: 'island',
+            id: '1',
+            url: 'http://127.0.0.1:8080/island/1/',
+            republic: 0,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
         }, {
+            startedAt: 1,
+            promise: '3/0',
+            island: 'island',
+            id: '2',
+            republic: 0,
+            government: null
+        }, {
+            startedAt: 1,
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 2,
+            island: 'island',
+            id: '4',
+            url: 'http://127.0.0.1:8080/island/4/',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: null,
             id: '4'
         }), {
             name: 'join',
+            island: 'island',
             republic: 0,
+            self: {
+                url: 'http://127.0.0.1:8080/island/4/',
+                id: '4'
+            },
             leader: {
-                id: '1',
-                location: 'x'
+                url: 'http://127.0.0.1:8080/island/1/',
+                id: '1'
             }
         }, 'join')
         // Unrecoverable.
-        assert(chaperon._action({
-            island: [{
-                startedAt: 1,
-                location: 'x',
-                promise: '4/0',
-                island: 'island',
-                id: '1',
-                republic: 0,
-                government: {
-                    majority: [ '8' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 1,
-                promise: '3/0',
-                island: 'island',
-                id: '2',
-                republic: 0,
-                government: null
-            }, {
-                startedAt: 1,
-                island: 'island',
-                id: '3',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 2,
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            startedAt: 1,
+            location: 'x',
+            promise: '4/0',
+            island: 'island',
+            id: '1',
+            republic: 0,
+            government: {
+                majority: [ '8' ],
+                minority: []
+            }
         }, {
+            startedAt: 1,
+            promise: '3/0',
+            island: 'island',
+            id: '2',
+            republic: 0,
+            government: null
+        }, {
+            startedAt: 1,
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 2,
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: 0,
             id: '1'
         }), {
             name: 'unrecoverable'
         }, 'unrecoverable')
-        assert(chaperon._action({
-            island: [{
-                startedAt: 1,
-                location: 'x',
-                promise: '4/0',
-                island: 'island',
-                id: '1',
-                republic: 0,
-                government: {
-                    majority: [ '1' ],
-                    minority: []
-                }
-            }, {
-                startedAt: 1,
-                promise: '3/0',
-                island: 'island',
-                id: '2',
-                republic: 0,
-                government: null
-            }, {
-                startedAt: 1,
-                island: 'island',
-                id: '3',
-                republic: null,
-                government: null
-            }, {
-                startedAt: 2,
-                island: 'island',
-                id: '4',
-                republic: null,
-                government: null
-            }]
+        assert(chaperon._action([{
+            startedAt: 1,
+            location: 'x',
+            promise: '4/0',
+            island: 'island',
+            id: '1',
+            republic: 0,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
         }, {
+            startedAt: 1,
+            promise: '3/0',
+            island: 'island',
+            id: '2',
+            republic: 0,
+            government: null
+        }, {
+            startedAt: 1,
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 2,
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
             island: 'island',
             republic: 0,
             id: '1'

@@ -13,11 +13,8 @@
         -m, --mingle <url>
             discovery url
 
-        -C, --conduit <url>
+        -c, --conduit <url>
             conduit health url pattern
-
-        -c, --colleague <url pattern>
-            colleague health url pattern
 
         --help
             display help message
@@ -44,7 +41,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var shuttle = Shuttle.shuttle(program, logger)
 
     program.helpIf(program.ultimate.help)
-    program.required('mingle', 'conduit', 'colleague', 'bind')
+    program.required('mingle', 'conduit', 'bind')
     program.validate(require('arguable/bindable'), 'bind')
 
     var bind = program.ultimate.bind
@@ -59,8 +56,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var colleagues = new Colleagues({
         ua: new Vizsla,
         mingle: program.ultimate.mingle,
-        conduit: program.ultimate.conduit,
-        colleague: program.ultimate.colleague
+        conduit: program.ultimate.conduit
     })
 
     var chaperon = new Chaperon({
@@ -80,7 +76,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     logger.info('started', { parameters: program.ultimate, $vargs: program.vargs })
 
     var server = http.createServer(chaperon.dispatcher.createWrappedDispatcher())
-    server.listen(bind.port, bind.address, async())
     destroyer(server)
+    server.listen(bind.port, bind.address, async())
     program.on('shutdown', server.destroy.bind(server))
 }))
