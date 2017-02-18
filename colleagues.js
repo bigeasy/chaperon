@@ -11,6 +11,7 @@ var coalesce = require('nascent.coalesce')
 // Control-flow utilities.
 var cadence = require('cadence')
 
+var logger = require('prolific.logger').createLogger('chaperon')
 
 // Create a client with the given user agent that will query the Mingle end
 // point URL at `mingle`. The `conduit` and `colleague` arguments are string
@@ -36,8 +37,9 @@ Colleagues.prototype.get = cadence(function (async) {
         async.map(function (host) {
             var conduitUrl = util.format(this._conduit, host)
             async(function () {
-                this._ua.fetch({ url: conduitUrl, nullify: true }, async())
+                this._ua.fetch({ url: url.resolve(conduitUrl, './health'), nullify: true }, async())
             }, function (conduit) {
+                logger.info('conduit', { host: host, $response: conduit })
                 async.map(function (path) {
                     var parsed = url.parse(url.resolve(conduitUrl + '/', './' +  path + '/'))
                     parsed.path = parsed.pathname = path_.normalize(String(parsed.pathname))

@@ -16,6 +16,9 @@
         -c, --conduit <url>
             conduit health url pattern
 
+        -s, --stable <url>
+            how long ot wait to determine that the collection of hosts is stable
+
         --help
             display help message
 
@@ -61,7 +64,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var chaperon = new Chaperon({
         colleagues: colleagues,
-        stableAfter: 30 * 1000
+        stableAfter: (+(program.ultimate.stable) || 30) * 1000
     })
 
     var isochronous = new Isochronous({
