@@ -12,7 +12,7 @@ function prove (async, assert) {
         var dispatcher = new Dispatcher(this)
         dispatcher.dispatch('GET /dummy', 'dummy')
         dispatcher.dispatch('GET /discover', 'discover')
-        dispatcher.dispatch('GET /conduit', 'conduit')
+        dispatcher.dispatch('GET /conduit/health', 'conduit')
         dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
         this.dispatcher = dispatcher
     }
@@ -47,7 +47,7 @@ function prove (async, assert) {
     var colleagues = new Colleagues({
         ua: ua,
         mingle: 'http://127.0.0.1:8080/discover',
-        conduit: 'http://%s/conduit'
+        conduit: 'http://%s/conduit/'
     })
 
     async(function () {
