@@ -59,6 +59,7 @@ function prove (async, assert) {
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
+            promise: '4/0',
             government: {
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
