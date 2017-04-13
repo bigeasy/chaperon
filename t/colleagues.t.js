@@ -12,7 +12,7 @@ function prove (async, assert) {
         this.reactor = new Reactor(this, function (dispatcher) {
             dispatcher.dispatch('GET /dummy', 'dummy')
             dispatcher.dispatch('GET /discover', 'discover')
-            dispatcher.dispatch('GET /health', 'conduit')
+            dispatcher.dispatch('GET /conduit/health', 'conduit')
             dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
         })
     }
