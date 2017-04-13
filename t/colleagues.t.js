@@ -6,15 +6,15 @@ function prove (async, assert) {
     var UserAgent = require('vizsla')
     var coalesce = require('nascent.coalesce')
 
-    var Dispatcher = require('inlet/dispatcher')
+    var Reactor = require('reactor')
 
     function Service () {
-        var dispatcher = new Dispatcher(this)
-        dispatcher.dispatch('GET /dummy', 'dummy')
-        dispatcher.dispatch('GET /discover', 'discover')
-        dispatcher.dispatch('GET /conduit', 'conduit')
-        dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
-        this.dispatcher = dispatcher
+        this.reactor = new Reactor(this, function (dispatcher) {
+            dispatcher.dispatch('GET /dummy', 'dummy')
+            dispatcher.dispatch('GET /discover', 'discover')
+            dispatcher.dispatch('GET /health', 'conduit')
+            dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
+        })
     }
 
     Service.prototype.discover = cadence(function (async) {
@@ -43,7 +43,7 @@ function prove (async, assert) {
     })
 
     var service = new Service
-    var ua = new UserAgent(service.dispatcher.createWrappedDispatcher())
+    var ua = new UserAgent(service.reactor.middleware)
     var colleagues = new Colleagues({
         ua: ua,
         mingle: 'http://127.0.0.1:8080/discover',

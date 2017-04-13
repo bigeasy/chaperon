@@ -26,7 +26,7 @@
                             "arguable":                     "5.0.x",
                             "ascension":                    "0.0.0",
                             "cadence":                      "1.0.x",
-                            "inlet":                        "2.0.x",
+                            "reactor":                      "4.4.x",
                             "isochronous":                  "1.0.x",
                             "magazine":                     "3.0.x",
                             "mingle.uptime":                "0.2.x",
@@ -35,7 +35,7 @@
                             "prolific.logger":              "3.0.x",
                             "prolific.shuttle":             "9.0.x",
                             "server-destroy":               "1.0.1",
-                            "vizsla":                       "2.0.x"
+                            "vizsla":                       "3.6.x"
     },
     "devDependencies":
     {

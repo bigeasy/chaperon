@@ -28,7 +28,7 @@ var unrecoverable = require('./unrecoverable')
 var Uptime = require('mingle.uptime')
 
 // Bind an object to Sencha Connect middleware.
-var Dispatcher = require('inlet/dispatcher')
+var Reactor = require('reactor')
 
 // Most-recently used cache.
 var Cache = require('magazine')
@@ -38,11 +38,11 @@ function Chaperon (options) {
     this._stableAfter = options.stableAfter || 2000
     this._Date = coalesce(options.Date, Date)
     this._uptimes = new Cache().createMagazine()
-    var dispatcher = new Dispatcher(this)
-    dispatcher.dispatch('GET /', 'index')
-    dispatcher.dispatch('POST /action', 'action')
-    dispatcher.dispatch('GET /health', 'health')
-    this.dispatcher = dispatcher
+    this.reactor = new Reactor(this, function (dispatcher) {
+        dispatcher.dispatch('GET /', 'index')
+        dispatcher.dispatch('POST /action', 'action')
+        dispatcher.dispatch('GET /health', 'health')
+    })
 }
 
 Chaperon.prototype.index = cadence(function () {
@@ -202,7 +202,7 @@ Chaperon.prototype.action = cadence(function (async, request) {
 })
 
 Chaperon.prototype.health = cadence(function () {
-    var health = { http: this.dispatcher.turnstile.health }
+    var health = { http: this.reactor.turnstile.health }
     logger.info('health', health)
     return health
 })

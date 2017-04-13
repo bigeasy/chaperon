@@ -78,7 +78,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     logger.info('started', { parameters: program.ultimate, $vargs: program.vargs })
 
-    var server = http.createServer(chaperon.dispatcher.createWrappedDispatcher())
+    var server = http.createServer(chaperon.reactor.middleware)
     destroyer(server)
     server.listen(bind.port, bind.address, async())
     program.on('shutdown', server.destroy.bind(server))

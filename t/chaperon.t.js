@@ -10,9 +10,6 @@ function prove (async, assert) {
         stableAfter: 1,
         Date: { now: function () { return now } }
     })
-    var Dispatcher = require('inlet/dispatcher')
-    var UserAgent = require('vizsla')
-    var cadence = require('cadence')
 
     async(function () {
         chaperon.index(async())
