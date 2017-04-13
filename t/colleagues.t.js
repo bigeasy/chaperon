@@ -47,7 +47,7 @@ function prove (async, assert) {
     var colleagues = new Colleagues({
         ua: ua,
         mingle: 'http://127.0.0.1:8080/discover',
-        conduit: 'http://%s/conduit'
+        conduit: 'http://%s/conduit/'
     })
 
     async(function () {
@@ -59,6 +59,7 @@ function prove (async, assert) {
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
+            promise: '4/0',
             government: {
                 majority: [ '1', '2' ],
                 minority: [ '3' ],

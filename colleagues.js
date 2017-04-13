@@ -56,6 +56,7 @@ Colleagues.prototype.get = cadence(function (async) {
                             id: got.id,
                             startedAt: got.startedAt,
                             url: colleagueUrl,
+                            promise: got.government.promise,
                             government: got.government
                         })
                     })
