@@ -1,4 +1,4 @@
-require('proof/redux')(14, require('cadence')(prove))
+require('proof')(14, require('cadence')(prove))
 
 function prove (async, assert) {
     var Chaperon = require('../chaperon')
