@@ -11,7 +11,7 @@
 //
 
 // Common utilities.
-var coalesce = require('nascent.coalesce')
+var coalesce = require('extant')
 var util = require('util')
 
 var ascension = require('ascension')

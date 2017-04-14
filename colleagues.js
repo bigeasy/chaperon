@@ -6,7 +6,7 @@
 var url = require('url')
 var util = require('util')
 var path_ = require('path')
-var coalesce = require('nascent.coalesce')
+var coalesce = require('extant')
 
 // Control-flow utilities.
 var cadence = require('cadence')

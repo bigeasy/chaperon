@@ -4,7 +4,7 @@ function prove (async, assert) {
     var cadence = require('cadence')
     var Colleagues = require('../colleagues')
     var UserAgent = require('vizsla')
-    var coalesce = require('nascent.coalesce')
+    var coalesce = require('extant')
 
     var Reactor = require('reactor')
 
