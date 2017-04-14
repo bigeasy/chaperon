@@ -67,10 +67,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
         stableAfter: (+(program.ultimate.stable) || 30) * 1000
     })
 
-    var isochronous = new Isochronous({
-        operation: { object: chaperon, method: 'health' },
-        interval: 30000
-    })
+    var isochronous = new Isochronous(chaperon, 'health', { interval: 30000 })
     isochronous.run(abend)
 
     program.on('shutdown', isochronous.stop.bind(isochronous))
