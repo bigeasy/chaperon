@@ -31,7 +31,7 @@
                             "magazine":                     "3.0.x",
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
-                            "prolific.logger":              "3.0.x",
+                            "prolific.logger":              "5.0.x",
                             "prolific.shuttle":             "11.0.x",
                             "reactor":                      "4.6.x",
                             "server-destroy":               "1.0.1",
