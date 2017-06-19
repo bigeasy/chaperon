@@ -10,8 +10,11 @@ function prove (async, assert) {
             colleague: 'http://%s%s/health',
             bind: '8088'
         }, async())
-    }, function () {
-        assert(true, 'started')
-        io.emit('SIGTERM')
+        async(function () {
+            io.ready.wait(async())
+        }, function () {
+            assert(true, 'started')
+            io.emit('SIGTERM')
+        })
     })
 }

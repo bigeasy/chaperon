@@ -35,13 +35,20 @@
 require('arguable')(module, require('cadence')(function (async, program) {
     var http = require('http')
 
+    var Destructible = require('destructible')
+
     var Shuttle = require('prolific.shuttle')
     var abend = require('abend')
     var http = require('http')
+    var delta = require('delta')
 
     var logger = require('prolific.logger').createLogger('chaperon')
 
     var shuttle = Shuttle.shuttle(program, logger)
+
+    var destructible = new Destructible('chaperon')
+
+    program.on('shutdown', destructible.destroy.bind(destructible))
 
     program.helpIf(program.ultimate.help)
     program.required('mingle', 'conduit', 'bind')
@@ -70,13 +77,18 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var isochronous = new Isochronous(chaperon, 'health', { interval: 30000 })
     isochronous.run(abend)
 
-    program.on('shutdown', isochronous.stop.bind(isochronous))
-    program.on('shutdown', shuttle.close.bind(shuttle))
+    destructible.addDestructor('isochronous', isochronous, 'stop')
+    destructible.addDestructor('shuttle', shuttle, 'close')
 
-    logger.info('started', { parameters: program.ultimate, $vargs: program.vargs })
 
     var server = http.createServer(chaperon.reactor.middleware)
     destroyer(server)
-    server.listen(bind.port, bind.address, async())
-    program.on('shutdown', server.destroy.bind(server))
+    async(function () {
+        server.listen(bind.port, bind.address, async())
+    }, function () {
+        logger.info('started', { parameters: program.ultimate, $vargs: program.vargs })
+        destructible.addDestructor('http', server, 'destroy')
+        delta(async()).ee(server).on('close')
+        program.ready.unlatch()
+    })
 }))
