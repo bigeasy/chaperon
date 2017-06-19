@@ -27,7 +27,7 @@
                             "ascension":                    "0.0.1",
                             "cadence":                      "1.0.x",
                             "extant":                       "1.0.x",
-                            "isochronous":                  "3.0.x",
+                            "isochronous":                  "3.2.x",
                             "magazine":                     "3.0.x",
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
