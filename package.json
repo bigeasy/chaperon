@@ -34,7 +34,7 @@
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
                             "prolific.logger":              "5.0.x",
-                            "prolific.shuttle":             "13.0.x",
+                            "prolific.shuttle":             "15.0.x",
                             "reactor":                      "5.0.x",
                             "server-destroy":               "1.0.1",
                             "vizsla":                       "7.0.x"
