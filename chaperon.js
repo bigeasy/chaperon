@@ -35,7 +35,7 @@ var Cache = require('magazine')
 
 function Chaperon (options) {
     this._colleagues = options.colleagues
-    this._stableAfter = options.stableAfter || 2000
+    this._stableAfter = options.stableAfter
     this._Date = coalesce(options.Date, Date)
     this._uptimes = new Cache().createMagazine()
     this.reactor = new Reactor(this, function (dispatcher) {
