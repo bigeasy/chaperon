@@ -1,4 +1,4 @@
-require('proof')(1, require('cadence')(prove))
+require('proof')(2, require('cadence')(prove))
 
 function prove (async, assert) {
     var cadence = require('cadence')
@@ -66,6 +66,39 @@ function prove (async, assert) {
                 constituents: [],
                 promise: '4/0'
             }
-        }], 'colleagues')
+        }], 'discovery from mingle')
+        responses = [{
+            requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
+            island: 'island',
+            republic: 1,
+            startedAt: 1,
+            id: '1',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }]
+        colleagues = new Colleagues({
+            ua: ua,
+            mingle: [ 'http://10.2.77.6:8486/conduit/' ]
+        })
+        colleagues.get(async())
+    }, function (colleagues) {
+        assert(colleagues, [{
+            island: 'island',
+            republic: 1,
+            startedAt: 1,
+            id: '1',
+            url: 'http://10.2.77.6:8486/conduit/island/1/',
+            promise: '4/0',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }], 'discovery as array ')
     })
 }

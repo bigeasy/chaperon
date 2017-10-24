@@ -32,7 +32,11 @@ function Colleagues (options) {
 Colleagues.prototype.get = cadence(function (async) {
     var colleagues = []
     async(function () {
-        this._ua.fetch({ url: this._mingle, nullify: true }, async())
+        if (Array.isArray(this._mingle)) {
+            return [ this._mingle ]
+        } else {
+            this._ua.fetch({ url: this._mingle, nullify: true }, async())
+        }
     }, function (got) {
         async.map(function (conduitUrl) {
             async(function () {
