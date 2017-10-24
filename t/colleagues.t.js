@@ -18,7 +18,7 @@ function prove (async, assert) {
     }
 
     Service.prototype.discover = cadence(function (async) {
-        return [['10.2.77.6:8486']]
+        return [[ 'http://10.2.77.6:8486/conduit/' ]]
     })
 
     Service.prototype.conduit = cadence(function (async) {

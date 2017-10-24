@@ -6,8 +6,6 @@ function prove (async, assert) {
     async(function () {
         io = bin({
             mingle: 'http://127.0.0.1:8686',
-            conduit: 'http://%/health',
-            colleague: 'http://%s%s/health',
             bind: '8088'
         }, async())
         async(function () {

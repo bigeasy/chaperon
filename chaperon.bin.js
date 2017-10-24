@@ -13,9 +13,6 @@
         -m, --mingle <url>
             discovery url
 
-        -c, --conduit <url>
-            conduit health url pattern
-
         -s, --stable <url>
             how long ot wait to determine that the collection of hosts is stable
 
@@ -51,7 +48,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
     program.on('shutdown', destructible.destroy.bind(destructible))
 
     program.helpIf(program.ultimate.help)
-    program.required('mingle', 'conduit', 'bind')
+    program.required('mingle', 'bind')
     program.validate(require('arguable/bindable'), 'bind')
 
     var bind = program.ultimate.bind
@@ -65,8 +62,7 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var colleagues = new Colleagues({
         ua: new Vizsla,
-        mingle: program.ultimate.mingle,
-        conduit: program.ultimate.conduit
+        mingle: program.ultimate.mingle
     })
 
     var chaperon = new Chaperon({

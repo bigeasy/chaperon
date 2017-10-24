@@ -34,12 +34,11 @@ Colleagues.prototype.get = cadence(function (async) {
     async(function () {
         this._ua.fetch({ url: this._mingle, nullify: true }, async())
     }, function (got) {
-        async.map(function (host) {
-            var conduitUrl = util.format(this._conduit, host)
+        async.map(function (conduitUrl) {
             async(function () {
                 this._ua.fetch({ url: url.resolve(conduitUrl, './health'), nullify: true }, async())
             }, function (conduit) {
-                logger.info('conduit', { host: host, $response: conduit })
+                logger.info('conduit', { url: conduitUrl, $response: conduit })
                 async.map(function (path) {
                     var parsed = url.parse(url.resolve(conduitUrl + '/', './' +  path + '/'))
                     parsed.path = parsed.pathname = path_.normalize(String(parsed.pathname))
