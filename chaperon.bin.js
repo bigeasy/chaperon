@@ -53,7 +53,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var bind = program.ultimate.bind
 
-    var Isochronous = require('isochronous')
     var Vizsla = require('vizsla')
     var Chaperon = require('./chaperon')
     var Colleagues = require('./colleagues')
@@ -70,10 +69,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
         stableAfter: (+(program.ultimate.stable) || 30) * 1000
     })
 
-    var isochronous = new Isochronous(chaperon, 'health', { interval: 30000 })
-    isochronous.run(abend)
-
-    destructible.addDestructor('isochronous', isochronous, 'stop')
     destructible.addDestructor('shuttle', shuttle, 'close')
 
 
