@@ -29,7 +29,7 @@
                             "delta":                        "1.2.x",
                             "destructible":                 "0.17.x",
                             "extant":                       "1.0.x",
-                            "magazine":                     "3.0.x",
+                            "magazine":                     "3.2.x",
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
                             "prolific.logger":              "5.0.x",
