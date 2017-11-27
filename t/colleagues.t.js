@@ -4,6 +4,7 @@ function prove (async, assert) {
     var cadence = require('cadence')
     var Colleagues = require('../colleagues')
     var UserAgent = require('vizsla')
+    var Interlocutor = require('interlocutor')
     var coalesce = require('extant')
 
     var Reactor = require('reactor')
@@ -43,7 +44,7 @@ function prove (async, assert) {
     })
 
     var service = new Service
-    var ua = new UserAgent(service.reactor.middleware)
+    var ua = new UserAgent().bind({ http: new Interlocutor(service.reactor.middleware) })
     var colleagues = new Colleagues({
         ua: ua,
         mingle: 'http://127.0.0.1:8080/discover',

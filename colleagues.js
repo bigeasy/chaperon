@@ -13,6 +13,9 @@ var cadence = require('cadence')
 
 var logger = require('prolific.logger').createLogger('chaperon')
 
+var nullify = require('vizsla/nullify')
+var jsonify = require('vizsla/jsonify')
+
 // Create a client with the given user agent that will query the Mingle end
 // point URL at `mingle`. The `conduit` and `colleague` arguments are string
 // formats used to create the URLs to query the conduit and colleague
@@ -48,11 +51,15 @@ Colleagues.prototype.get = cadence(function (async) {
                     parsed.path = parsed.pathname = path_.normalize(String(parsed.pathname))
                     var colleagueUrl = url.format(parsed)
                     async(function () {
-                        this._ua.fetch({ url: url.resolve(colleagueUrl, 'health'), nullify: true }, async())
+                        this._ua.fetch({
+                            url: url.resolve(colleagueUrl, 'health'),
+                            gateways: [ nullify(), jsonify({}) ]
+                        }, async())
                     }, function (got) {
                         if (got == null) {
                             return
                         }
+                        console.log(got)
                         colleagues.push({
                             island: got.island,
                             republic: got.republic,

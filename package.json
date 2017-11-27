@@ -29,6 +29,7 @@
                             "delta":                        "1.2.x",
                             "destructible":                 "0.17.x",
                             "extant":                       "1.0.x",
+                            "interlocutor":                 "0.5.x",
                             "magazine":                     "3.2.x",
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
@@ -36,7 +37,7 @@
                             "prolific.shuttle":             "17.0.x",
                             "reactor":                      "10.1.x",
                             "server-destroy":               "1.0.1",
-                            "vizsla":                       "9.0.x"
+                            "vizsla":                       "10.3.x"
     },
     "devDependencies":
     {
