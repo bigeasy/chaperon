@@ -13,8 +13,8 @@ function prove (async, assert) {
 
     async(function () {
         chaperon.index(async())
-    }, function (index) {
-        assert(index, 'Compassion Chaperon API\n', 'index')
+    }, function (statusCode, headers, body) {
+        assert(body, 'Compassion Chaperon API\n', 'index')
         chaperon.health(async())
     }, function (health) {
         assert(health, {

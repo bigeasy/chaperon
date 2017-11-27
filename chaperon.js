@@ -46,7 +46,7 @@ function Chaperon (options) {
 }
 
 Chaperon.prototype.index = cadence(function () {
-    return 'Compassion Chaperon API\n'
+    return [ 200, { 'content-type': 'text/plain' }, 'Compassion Chaperon API\n' ]
 })
 
 function group (groupBy, collection, list) {
