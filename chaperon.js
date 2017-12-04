@@ -195,8 +195,8 @@ Chaperon.prototype.action = cadence(function (async, request) {
     async(function () {
         this._colleagues.get(async())
     }, function (colleagues) {
+        logger.info('action', { $colleagues: colleagues, $request: request })
         var action = this._action(colleagues, request.body)
-        logger.info('action', { $colleagues: colleagues, $action: action })
         return action
     })
 })
