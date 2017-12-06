@@ -1,6 +1,6 @@
 {
     "name":                 "chaperon",
-    "version":              "0.11.3",
+    "version":              "0.12.0",
     "description":
 
       "Inititialize and possibly restart a Paxos consensus.",
