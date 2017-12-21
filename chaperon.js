@@ -186,8 +186,16 @@ Chaperon.prototype._action = function (colleagues, request) {
         return { name: 'unrecoverable' }
     }
 
+    var republic = republics.map[recoverable[0]]
+    var colleagues = republic.colleagues.sort(function (a, b) {
+        return Monotonic.compare(a.promise, b.promise)
+    })
+
     // We are up and running.
-    return { name: 'recoverable' }
+    return {
+        name: 'recoverable',
+        copacetic: colleagues[0].promise == colleagues[colleagues.length - 1].promise
+    }
 }
 
 Chaperon.prototype.action = cadence(function (async, request) {
@@ -197,7 +205,7 @@ Chaperon.prototype.action = cadence(function (async, request) {
     }, function (colleagues) {
         logger.info('request', { $colleagues: colleagues, $request: request.body })
         var action = this._action(colleagues, request.body)
-        logger.info('action', { $action: action })
+        logger.info('action', { $action: action, copacetic: !! action.copacetic })
         return action
     })
 })

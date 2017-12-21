@@ -1,4 +1,4 @@
-require('proof')(14, require('cadence')(prove))
+require('proof')(15, require('cadence')(prove))
 
 function prove (async, assert) {
     var Chaperon = require('../chaperon')
@@ -383,7 +383,46 @@ function prove (async, assert) {
             republic: 0,
             id: '1'
         }), {
-            name: 'recoverable'
+            name: 'recoverable',
+            copacetic: false
         }, 'recoverable')
+        assert(chaperon._action([{
+            startedAt: 1,
+            location: 'x',
+            promise: '4/0',
+            island: 'island',
+            id: '1',
+            republic: 0,
+            government: {
+                majority: [ '1' ],
+                minority: []
+            }
+        }, {
+            startedAt: 1,
+            promise: '4/0',
+            island: 'island',
+            id: '2',
+            republic: 0,
+            government: null
+        }, {
+            startedAt: 1,
+            island: 'island',
+            id: '3',
+            republic: null,
+            government: null
+        }, {
+            startedAt: 2,
+            island: 'island',
+            id: '4',
+            republic: null,
+            government: null
+        }], {
+            island: 'island',
+            republic: 0,
+            id: '1'
+        }), {
+            name: 'recoverable',
+            copacetic: true
+        }, 'copacetic')
     })
 }
