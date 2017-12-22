@@ -131,11 +131,7 @@ Chaperon.prototype._action = function (colleagues, request) {
     if (recoverable.length > 1) {
         return { name: 'splitBrain' }
     }
-    recoverable = recoverable.filter(function (republic) {
-        return !unrecoverable(republic.colleagues)
-    }).map(function (republic) {
-        return republic.republic
-    })
+    /*
     if (recoverable.length > 1) {
         logger.error('splitBrain', {
             $republics: recoverable, $colleagues: colleagues, $request: request
@@ -146,6 +142,7 @@ Chaperon.prototype._action = function (colleagues, request) {
             return { name: 'unstable' }
         }
     }
+    */
     // Looking to join.
 
     //
@@ -170,13 +167,16 @@ Chaperon.prototype._action = function (colleagues, request) {
         // Find the leader of the current island by first selecting the
         // colleague with the greated promise and using the leader id
         // specified in that government to find the leader.
-        var republic = republics.map[recoverable[0]]
+        var republic = republics.map[recoverable[0].republic]
         var leaderId = republic.colleagues.sort(function (a, b) {
             return Monotonic.compare(b.promise, a.promise)
         })[0].government.majority[0]
         var leader = republic.colleagues.filter(function (colleague) {
             return colleague.id == leaderId
         }).shift()
+        if (leader == null) {
+            return { name: 'unrecoverable' }
+        }
         // Ask that leader to immigrate us.
         return {
             name: 'join',
@@ -187,13 +187,16 @@ Chaperon.prototype._action = function (colleagues, request) {
             }
         }
     }
+    recoverable = recoverable.filter(function (republic) {
+        return !unrecoverable(republic.colleagues)
+    })
 
     if (recoverable.length == 0) {
         // We are part of an island that is unrecoverable.
         return { name: 'unrecoverable' }
     }
 
-    var republic = republics.map[recoverable[0]]
+    var republic = republics.map[recoverable[0].republic]
     var colleagues = republic.colleagues.sort(function (a, b) {
         return Monotonic.compare(a.promise, b.promise)
     })
