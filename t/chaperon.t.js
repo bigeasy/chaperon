@@ -150,6 +150,7 @@ function prove (async, assert) {
             republic: 0,
             id: '1'
         }), { name: 'splitBrain' }, 'split brain')
+        /*
         assert(chaperon._action([{
             island: 'island',
             id: '1',
@@ -186,6 +187,7 @@ function prove (async, assert) {
             republic: null,
             id: '4'
         }), { name: 'unstable' }, 'split brain unstable')
+        */
         assert(chaperon._action([{
             startedAt: 1,
             island: 'island',
@@ -424,5 +426,12 @@ function prove (async, assert) {
             name: 'recoverable',
             copacetic: true
         }, 'copacetic')
+        // TODO Make it easy to drop in a fixture and run these tests.
+        chaperon._action.apply(chaperon, require('./fixtures/crashed2'))
+        now++
+        assert(chaperon._action.apply(chaperon,
+            require('./fixtures/crashed2')), {
+                name: 'unrecoverable'
+        }, 'garbled should be split brain')
     })
 }

@@ -125,7 +125,14 @@ Chaperon.prototype._action = function (colleagues, request) {
     //
     var republics = group('republic', 'colleagues', island.colleagues)
     var recoverable = republics.array.filter(function (republic) {
-        return republic.republic != null && !unrecoverable(republic.colleagues)
+        return republic.republic != null
+        // && !unrecoverable(republic.colleagues)
+    })
+    if (recoverable.length > 1) {
+        return { name: 'splitBrain' }
+    }
+    recoverable = recoverable.filter(function (republic) {
+        return !unrecoverable(republic.colleagues)
     }).map(function (republic) {
         return republic.republic
     })
