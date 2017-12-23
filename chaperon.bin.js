@@ -71,7 +71,6 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     destructible.addDestructor('shuttle', shuttle, 'close')
 
-
     var server = http.createServer(chaperon.reactor.middleware)
     destroyer(server)
     async(function () {
