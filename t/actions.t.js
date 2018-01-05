@@ -1,4 +1,4 @@
-require('proof')(4, prove)
+require('proof')(5, prove)
 
 function prove (okay) {
     var Chaperon = require('../chaperon')
@@ -47,4 +47,38 @@ function prove (okay) {
             stable: false,
         }
     }), [],  'unstable')
+    okay(chaperon._actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [{
+                republic: null,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: null,
+                    id: '1',
+                    government: { majority: [], minority: [] }
+                }, {
+                    island: 'island',
+                    startedAt: 0,
+                    republic: null,
+                    id: '2',
+                    government: { majority: [], minority: [] }
+                }]
+            }],
+            recoverable: [],
+            unrecoverable: []
+        }
+    }), [{
+        action: 'bootstrap',
+        colleague: {
+            island: 'island',
+            id: '1',
+            startedAt: 0,
+            republic: null,
+            government: { majority: [], minority: [] }
+        }
+    }], 'bootstrap')
 }

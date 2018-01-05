@@ -130,6 +130,15 @@ Chaperon.prototype._actions = function (islands) {
         if (!island.stable) {
             continue
         }
+        if (island.recoverable.length == 0) {
+            if (island.uninitialized.length != 0) {
+                var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
+                actions.push({
+                    action: 'bootstrap',
+                    colleague: oldest
+                })
+            }
+        }
     }
     return actions
 }
