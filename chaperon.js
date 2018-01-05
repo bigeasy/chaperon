@@ -24,6 +24,7 @@ var Monotonic = require('monotonic').asString
 
 var logger = require('prolific.logger').createLogger('chaperon')
 var unrecoverable = require('./unrecoverable')
+var recoverable = require('./recoverable')
 
 var Uptime = require('mingle.uptime')
 
@@ -80,21 +81,78 @@ var byStartedAtThenId = ascension([ Number, String ], function (object) {
     return [ object.startedAt, object.id ]
 })
 
-Chaperon.prototype._action = function (colleagues, request) {
+Chaperon.prototype._gathered = function (colleagues) {
+    var islands = group('island', 'colleagues', colleagues).map
+    var gathered = {}
+    // Deterimine the actions for each island.
+    for (var islandName in islands) {
+        var island = islands[islandName]
+        gathered[islandName] = {
+            name: islandName,
+            stable: false,
+            uninitialized: null,
+            recoverable: null,
+            unrecoverable: null
+        }
+        // See if the colleagues that make up this island have stabilized.
+        var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
+        if (uptime.calculate(island.colleagues) < this._stableAfter) {
+            continue
+        }
+        gathered[islandName].stable = true
+        var republics = group('republic', 'colleagues', island.colleagues).array
+        gathered[islandName].uninitialized = republics.filter(function (republic) {
+            return republic.republic == null
+        })
+        var republics = republics.filter(function (republic) {
+            return republic.republic != null
+        })
+        // We're going to assume that we would not have started a new republic
+        // if the old was had become unrecoverable. Could be a chance that we
+        // actually have two functioning republics, so we'd want to make log
+        // this state since it is split brain. I've not seen it in the wild yet
+        // so I'm not overly converned about it at the moment.
+        gathered[islandName].recoverable = republics.filter(function (republic) {
+            return republic.recoverable = recoverable(republic.colleagues)
+        })
+        gathered[islandName].unrecoverable = republics.filter(function (republic) {
+            return ! republic.recoverable
+        })
+    }
+    this._uptimes.expire(1000 * 60 * 15)
+    return gathered
+}
+
+Chaperon.prototype._actions = function (islands) {
+    var actions = []
+    for (var name in islands) {
+        var island = islands[name]
+        if (!island.stable) {
+            continue
+        }
+    }
+    return actions
+}
+
+Chaperon.prototype.x = function (colleagues, request) {
     // Group into islands.
     var islands = group('island', 'colleagues', colleagues).map
     // Get the colleagues for the requested island.
     if (islands[request.island] == null) {
         return { name: 'unreachable' }
     }
-    var island = islands[request.island]
-    // See if the colleagues that make up this island have stabilized.
-    var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
-    if (uptime.calculate(island.colleagues) < this._stableAfter) {
-        return { name: 'unstable' }
+    for (var islandName in islands) {
+        var island = islands[islandName]
+        // See if the colleagues that make up this island have stabilized.
+        var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
+        if (uptime.calculate(island.colleagues) < this._stableAfter) {
+            island.stable = false
+            continue
+        }
     }
-    // Clear out after fifteen minutes.
-    this._uptimes.expire(1000 * 60 * 15)
+    // Clear out uptimes after fifteen minutes.
+    // Return out calculations.
+    return islands
     // See if we can find the requesting colleague over the network and make
     // sure that no other colleague is using its id.
     var instances = island.colleagues.filter(function (colleague) {
