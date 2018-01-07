@@ -1,5 +1,7 @@
 sudo: false
 
+cache: yarn
+
 language: node_js
 
 node_js:
