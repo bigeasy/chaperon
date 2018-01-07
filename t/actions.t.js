@@ -1,4 +1,4 @@
-require('proof')(6, prove)
+require('proof')(7, prove)
 
 function prove (okay) {
     var Chaperon = require('../chaperon')
@@ -23,6 +23,7 @@ function prove (okay) {
     okay(islands['island'].stable === false, 'unstable')
     now++
     var islands = chaperon._gathered(colleagues)
+
     okay(islands['island'].stable, 'stable')
     okay(islands['island'], {
         name: 'island',
@@ -40,6 +41,33 @@ function prove (okay) {
         }],
         unrecoverable: []
     }, 'gathered')
+    var colleagues = [{
+        island: 'island',
+        id: '1',
+        republic: null,
+        government: {
+            majority: [ '1' ],
+            minority: []
+        }
+    }]
+    var islands = chaperon._gathered(colleagues)
+    now++
+    var islands = chaperon._gathered(colleagues)
+    okay(islands['island'], {
+        name: 'island',
+        stable: true,
+        uninitialized: [{
+            republic: null,
+            colleagues: [{
+                island: 'island',
+                republic: null,
+                id: '1',
+                government: { majority: [ '1' ], minority: [] }
+            }]
+        }],
+        recoverable: [],
+        unrecoverable: []
+    }, 'gathered null')
     okay(chaperon._actions({
         island: {
             name: 'island',
