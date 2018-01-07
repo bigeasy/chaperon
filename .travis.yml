@@ -13,5 +13,5 @@ branches:
     - travis-ci
 
 install:
-  - npm install
+  - npm install --no-lockfile
   - npm install -g istanbul coveralls
