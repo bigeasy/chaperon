@@ -160,17 +160,22 @@ Chaperon.prototype._gathered = function (colleagues) {
 
 //
 Chaperon.prototype._actions = function (islands) {
-    var actions = []
+    var actions = {}
     // Chose an action for each island. A null list of actions indicates that
     // the island has halted.
 
     //
     for (var name in islands) {
-        // If the island is not stable there is no action to take.
         var island = islands[name]
+
+        // An array of actions to take keyed by island name.
+        actions[name] = []
+
+        // If the island is not stable there is no action to take.
         if (!island.stable) {
             continue
         }
+
         // If the there are no current recoverable consensuses then we are going
         // to bootstrap a new conensus.
         if (island.recoverable.length == 0) {
@@ -183,7 +188,7 @@ Chaperon.prototype._actions = function (islands) {
             }
             if (island.uninitialized.length != 0) {
                 var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
-                actions.push({ action: 'bootstrap', colleague: oldest })
+                actions[name].push({ action: 'bootstrap', colleague: oldest })
             }
         // This is split brain. Not really sure what the right answer is. It
         // is a bad state that has different meanings for different

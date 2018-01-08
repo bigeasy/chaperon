@@ -75,7 +75,7 @@ function prove (okay) {
             name: 'island',
             stable: false,
         }
-    }), [],  'unstable')
+    }), { island: [] },  'unstable action')
     okay(chaperon._actions({
         island: {
             name: 'island',
@@ -84,7 +84,7 @@ function prove (okay) {
             recoverable: [],
             unrecoverable: []
         }
-    }), [], 'empty')
+    }), { island: [] }, 'empty action')
     okay(chaperon._actions({
         island: {
             name: 'island',
@@ -109,14 +109,16 @@ function prove (okay) {
             recoverable: [],
             unrecoverable: []
         }
-    }), [{
-        action: 'bootstrap',
-        colleague: {
-            island: 'island',
-            id: '1',
-            startedAt: 0,
-            republic: null,
-            government: { majority: [], minority: [] }
-        }
-    }], 'bootstrap')
+    }), {
+        island: [{
+            action: 'bootstrap',
+            colleague: {
+                island: 'island',
+                id: '1',
+                startedAt: 0,
+                republic: null,
+                government: { majority: [], minority: [] }
+            }
+        }]
+    }, 'bootstrap')
 }
