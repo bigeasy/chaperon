@@ -28,6 +28,7 @@ function prove (okay) {
     okay(islands['island'], {
         name: 'island',
         stable: true,
+        okay: true,
         uninitialized: [],
         recoverable: [{
             republic: 1,
@@ -56,6 +57,7 @@ function prove (okay) {
     okay(islands['island'], {
         name: 'island',
         stable: true,
+        okay: true,
         uninitialized: [{
             republic: null,
             colleagues: [{

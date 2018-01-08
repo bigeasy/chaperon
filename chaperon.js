@@ -90,6 +90,7 @@ Chaperon.prototype._gathered = function (colleagues) {
         gathered[islandName] = {
             name: islandName,
             stable: false,
+            okay: true,
             uninitialized: null,
             recoverable: null,
             unrecoverable: null
@@ -123,156 +124,108 @@ Chaperon.prototype._gathered = function (colleagues) {
     return gathered
 }
 
+// The chaperon is going to make a best effort get newly booted islanders onto
+// an island, or to get a newly booted islander to form an island if none
+// exists. It takes the place of the sysadmin that would issue commands to
+// bootstrap a new consensus and to tell new participants to join an existing
+// consensus. It is not meant to be a consensus alogrithm in itself. It cannot
+// make intelligent decisions about all failure cases.
+//
+// The chaperon polls the discovery end point to get a collection of network
+// conduits. It then polls the network conduits to get a collection of
+// partipants. It waits for a while to ensure that that the collection of
+// participants is stable. It then makes a decision based on what the
+// participants have to say for themselves.
+//
+// If the chaperon cannot get a healthy response from all the network conduits
+// then it will not make a decision and instead wait for the network conduits to
+// become stable.
+//
+// We are going to poll every member returned by discovery, so if the list of
+// network conduits returned discovery endpoint is missing a conduit, the
+// chaperon is going to make a bad decision.
+//
+// TODO Split brain is unrecoverable. The Chaperon will detect it. It is an
+// unlikely state, it seems, but I'm not certain. It is definately a possiblity
+// if the discovery end point returns an incomplete list of network conduits.
+// We're probably going to want to look for this state in the logs in case we
+// miss it in the chaperon.
+//
+// TODO Describe the `rejoining` property which will cause the chaperon to halt
+// if it the chaperon is either forming a new consensus or if the consensus id
+// is not the same as the consensus id indicated by the `rejoining` property.
+//
+// TODO Clever word for `uninitialized` which could be instead `booted` or
+// `arriving` or something.
+
+//
 Chaperon.prototype._actions = function (islands) {
     var actions = []
+    // Chose an action for each island. A null list of actions indicates that
+    // the island has halted.
+
+    //
     for (var name in islands) {
+        // If the island is not stable there is no action to take.
         var island = islands[name]
         if (!island.stable) {
             continue
         }
+        // If the there are no current recoverable consensuses then we are going
+        // to bootstrap a new conensus.
         if (island.recoverable.length == 0) {
+            // If anyone of are participants believes it is going to rejoin an
+            // existing consensus then we halt.
+            if (island.uninitialized.filter(function (colleague) {
+                return colleague.rejoining != null
+            }).length != 0) {
+                return {}
+            }
             if (island.uninitialized.length != 0) {
                 var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
-                actions.push({
-                    action: 'bootstrap',
-                    colleague: oldest
-                })
+                actions.push({ action: 'bootstrap', colleague: oldest })
             }
+        // This is split brain. Not really sure what the right answer is. It
+        // is a bad state that has different meanings for different
+        // applications.
+        //
+        // Split brain could occur if an entire island is unreachable to the
+        // Chaperon when a new participant arrives. That new participant
+        // would become a dictator. The missing island becomes reachable and
+        // now we have a split brain. This is unlikely on a local network,
+        // so I don't have any real world experience with it.
+        //
+        // For now we are going to return halted and count on our
+        // environment to handle this, maybe by waking the admin.
+        } else if (island.recoverable.length > 1) {
+            return null
+        // TODO (Not true yet.) Otherwise we should tell any arriving
+        // participants to join the current consensus. We tell the participant
+        // to join by messaging the leader. This is a race condition since
+        // leadership can change. If the consensus is under new leadership when
+        // the participant trys to arrive it will crash restart.
+        } else {
+            var republic = island.recoverable[0]
+            var leaderId = republic.colleagues.sort(function (a, b) {
+                return Monotonic.compare(b.promise, a.promise)
+            })[0].government.majority[0]
+            var leader = republic.colleagues.filter(function (colleague) {
+                return colleague.id == leaderId
+            }).shift()
+            island.uninitialized.forEach(function (colleague) {
+                actions.push({
+                    name: 'join',
+                    republic: leader.republic,
+                    url: {
+                        self: instance.url,
+                        leader: leader.url
+                    },
+                    colleague: colleague
+                })
+            })
         }
     }
     return actions
-}
-
-Chaperon.prototype.x = function (colleagues, request) {
-    // Group into islands.
-    var islands = group('island', 'colleagues', colleagues).map
-    // Get the colleagues for the requested island.
-    if (islands[request.island] == null) {
-        return { name: 'unreachable' }
-    }
-    for (var islandName in islands) {
-        var island = islands[islandName]
-        // See if the colleagues that make up this island have stabilized.
-        var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
-        if (uptime.calculate(island.colleagues) < this._stableAfter) {
-            island.stable = false
-            continue
-        }
-    }
-    // Clear out uptimes after fifteen minutes.
-    // Return out calculations.
-    return islands
-    // See if we can find the requesting colleague over the network and make
-    // sure that no other colleague is using its id.
-    var instances = island.colleagues.filter(function (colleague) {
-        return colleague.id == request.id
-    })
-    switch (instances.length) {
-    case 1:
-        if (instances[0].republic != request.republic) {
-            return { name: 'garbled' }
-        }
-        break
-    case 0:
-        return { name: 'unreachable' }
-    default:
-        return { name: 'duplicated' }
-    }
-    var instance = instances.shift()
-    // Keeping with our island metaphor, we group an estabished running instance
-    // of Paxos into Republics. If Paxos becomes unrecoverable, we form a new
-    // Republic.
-    //
-    // Check for split brain. Let's hope this doesn't happen. Group the
-    // instances by island id, which is an island lifetime. Check if the
-    // colleagues associated with a specific island lifetime are recoverable.
-    // There should only be one that is recoverable. If there is more than one,
-    // then we have more than one functioning island.
-
-    //
-    var republics = group('republic', 'colleagues', island.colleagues)
-    var recoverable = republics.array.filter(function (republic) {
-        return republic.republic != null
-        // && !unrecoverable(republic.colleagues)
-    })
-    if (recoverable.length > 1) {
-        return { name: 'splitBrain' }
-    }
-    /*
-    if (recoverable.length > 1) {
-        logger.error('splitBrain', {
-            $republics: recoverable, $colleagues: colleagues, $request: request
-        })
-        if (request.republic != null && ~recoverable.indexOf(request.republic)) {
-            return { name: 'splitBrain' }
-        } else {
-            return { name: 'unstable' }
-        }
-    }
-    */
-    // Looking to join.
-
-    //
-    if (request.republic == null) {
-        if (recoverable.length == 0) {
-            // If there is no island established, it is bootstrapped by the
-            // instance that has been running the longest. If that's not us, we
-            // wait. Note that, yes, two instances can start at the same
-            // millisecond, so let's hope that we detect any sort of split brain
-            // created by that event.
-            var oldest = republics.null.colleagues.sort(byStartedAtThenId).shift()
-            if (oldest.id == request.id) {
-                return {
-                    name: 'bootstrap',
-                    url: {
-                        self: instance.url
-                    }
-                }
-            }
-            return { name: 'unstable' }
-        }
-        // Find the leader of the current island by first selecting the
-        // colleague with the greated promise and using the leader id
-        // specified in that government to find the leader.
-        var republic = republics.map[recoverable[0].republic]
-        var leaderId = republic.colleagues.sort(function (a, b) {
-            return Monotonic.compare(b.promise, a.promise)
-        })[0].government.majority[0]
-        var leader = republic.colleagues.filter(function (colleague) {
-            return colleague.id == leaderId
-        }).shift()
-        if (leader == null) {
-            return { name: 'unrecoverable' }
-        }
-        // Ask that leader to immigrate us.
-        return {
-            name: 'join',
-            republic: leader.republic,
-            url: {
-                self: instance.url,
-                leader: leader.url
-            }
-        }
-    }
-    recoverable = recoverable.filter(function (republic) {
-        return !unrecoverable(republic.colleagues)
-    })
-
-    if (recoverable.length == 0) {
-        // We are part of an island that is unrecoverable.
-        return { name: 'unrecoverable' }
-    }
-
-    var republic = republics.map[recoverable[0].republic]
-    var colleagues = republic.colleagues.sort(function (a, b) {
-        return Monotonic.compare(a.promise, b.promise)
-    })
-
-    // We are up and running.
-    return {
-        name: 'recoverable',
-        copacetic: colleagues[0].promise == colleagues[colleagues.length - 1].promise
-    }
 }
 
 Chaperon.prototype.action = cadence(function (async, request) {
