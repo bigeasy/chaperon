@@ -1,4 +1,4 @@
-require('proof')(10, prove)
+require('proof')(12, prove)
 
 function prove (okay) {
     var Chaperon = require('../chaperon')
@@ -255,4 +255,63 @@ function prove (okay) {
     }), {
         island: null
     }, 'split brain')
+    okay(chaperon._actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [{
+                republic: null,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: null,
+                    rejoining: 1,
+                    id: '1',
+                    government: { majority: [], minority: [] }
+                }, {
+                    island: 'island',
+                    startedAt: 0,
+                    republic: null,
+                    id: '2',
+                    government: { majority: [], minority: [] }
+                }]
+            }],
+            recoverable: [],
+            unrecoverable: []
+        }
+    }), {
+        island: null,
+    }, 'bootstrap with rejoining')
+    okay(chaperon._actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [{
+                republic: null,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: null,
+                    rejoining: 1,
+                    id: '1',
+                    government: { majority: [], minority: [] }
+                }]
+            }],
+            recoverable: [{
+                republic: 2,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 2,
+                    id: '2',
+                    government: { majority: [ '2' ], minority: [] }
+                }]
+            }],
+            unrecoverable: []
+        }
+    }), {
+        island: null,
+    }, 'join with wrong rejoining')
 }

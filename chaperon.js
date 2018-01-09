@@ -179,16 +179,17 @@ Chaperon.prototype._actions = function (islands) {
         // If the there are no current recoverable consensuses then we are going
         // to bootstrap a new conensus.
         if (island.recoverable.length == 0) {
-            // If anyone of are participants believes it is going to rejoin an
-            // existing consensus then we halt.
-            if (island.uninitialized.filter(function (colleague) {
-                return colleague.rejoining != null
-            }).length != 0) {
-                return {}
-            }
             if (island.uninitialized.length != 0) {
-                var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
-                actions[name].push({ action: 'bootstrap', colleague: oldest })
+                // If anyone of are participants believes it is going to rejoin an
+                // existing consensus then we halt.
+                if (island.uninitialized[0].colleagues.filter(function (colleague) {
+                    return colleague.rejoining != null
+                }).length != 0) {
+                    actions[name] = null
+                } else {
+                    var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
+                    actions[name].push({ action: 'bootstrap', colleague: oldest })
+                }
             }
         // This is split brain. Not really sure what the right answer is. It
         // is a bad state that has different meanings for different
@@ -209,6 +210,16 @@ Chaperon.prototype._actions = function (islands) {
         // to join by messaging the leader. This is a race condition since
         // leadership can change. If the consensus is under new leadership when
         // the participant trys to arrive it will crash restart.
+        } else if (
+            island.uninitialized.length != 0 &&
+            island.uninitialized[0].colleagues.filter(function (colleague) {
+                return !(
+                    colleague.rejoining == null ||
+                    colleague.rejoining == island.recoverable[0].republic
+                )
+            }).length != 0
+        ) {
+            actions[name] = null
         } else {
             var leaderId = island.recoverable[0].colleagues.sort(function (a, b) {
                 return Monotonic.compare(b.government.promise, a.government.promise)
