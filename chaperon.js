@@ -210,19 +210,18 @@ Chaperon.prototype._actions = function (islands) {
         // leadership can change. If the consensus is under new leadership when
         // the participant trys to arrive it will crash restart.
         } else {
-            var republic = island.recoverable[0]
-            var leaderId = republic.colleagues.sort(function (a, b) {
-                return Monotonic.compare(b.promise, a.promise)
+            var leaderId = island.recoverable[0].colleagues.sort(function (a, b) {
+                return Monotonic.compare(b.government.promise, a.government.promise)
             })[0].government.majority[0]
-            var leader = republic.colleagues.filter(function (colleague) {
+            var leader = island.recoverable[0].colleagues.filter(function (colleague) {
                 return colleague.id == leaderId
             }).shift()
-            island.uninitialized.forEach(function (colleague) {
-                actions.push({
-                    name: 'join',
+            island.uninitialized[0].colleagues.forEach(function (colleague) {
+                actions[name].push({
+                    action: 'join',
                     republic: leader.republic,
                     url: {
-                        self: instance.url,
+                        self: colleague.url,
                         leader: leader.url
                     },
                     colleague: colleague
