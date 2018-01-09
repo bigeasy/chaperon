@@ -20,7 +20,7 @@ module.exports = function (colleagues) {
             && colleague.promise != '0/0'
     })
     var government = republicans.sort(function (a, b) {
-        return Monotonic.compare(b.promise, a.promise)
+        return Monotonic.compare(b.government.promise, a.government.promise)
     })[0].government
     var parliament = government.majority.concat(government.minority)
     return republicans.filter(function (colleague) {

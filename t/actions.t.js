@@ -15,6 +15,16 @@ function prove (okay) {
         id: '1',
         republic: 1,
         government: {
+            promise: '2/0',
+            majority: [ '1' ],
+            minority: []
+        }
+    }, {
+        island: 'island',
+        id: '2',
+        republic: 1,
+        government: {
+            promise: '2/0',
             majority: [ '1' ],
             minority: []
         }
@@ -37,7 +47,12 @@ function prove (okay) {
                 island: 'island',
                 republic: 1,
                 id: '1',
-                government: { majority: [ '1' ], minority: [] }
+                government: { promise: '2/0', majority: [ '1' ], minority: [] }
+            }, {
+                island: 'island',
+                republic: 1,
+                id: '2',
+                government: { promise: '2/0', majority: [ '1' ], minority: [] }
             }]
         }],
         unrecoverable: []

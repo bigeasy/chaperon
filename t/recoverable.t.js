@@ -6,26 +6,29 @@ function prove (okay) {
     okay(!recoverable([
         {
             republic: '0',
-            promise: '1/0'
-        },
-        {
+            government: {
+                promise: '1/0'
+            }
+        }, {
             republic: '1',
             id: '1',
-            promise: '3/0',
             government: {
+                promise: '3/0',
                 majority: [ '1', '4' ],
                 minority: [ '5' ]
             }
-        },
-        {
+        }, {
             republic: '1',
             id: '2',
-            promise: '2/0'
-        },
-        {
+            government: {
+                promise: '2/0'
+            }
+        }, {
             republic: '1',
             id: '3',
-            promise: '2/0'
+            government: {
+                promise: '2/0'
+            }
         }
     ]), 'no quorum')
     okay(recoverable([{
@@ -35,12 +38,12 @@ function prove (okay) {
         island: 'bucketizer',
         id: 'emissary-nest-0kq4o',
         republic: 1467398192058,
-        promise: '4/0',
         leader: 'emissary-nest-fhz08',
         government: {
+            promise: '4/0',
             majority: [ 'emissary-nest-fhz08', 'emissary-nest-21qhh' ],
             minority: [ 'emissary-nest-0kq4o' ]
-         },
+         }
     }, {
         location: '10.2.9.6:8486',
         key: '[bucketizer]emissary-nest-21qhh',
@@ -48,12 +51,12 @@ function prove (okay) {
         island: 'bucketizer',
         id: 'emissary-nest-21qhh',
         republic: 1467398192058,
-        promise: '4/0',
         leader: 'emissary-nest-fhz08',
         government: {
+            promise: '4/0',
             majority: [ 'emissary-nest-fhz08', 'emissary-nest-21qhh' ],
             minority: [ 'emissary-nest-0kq4o' ]
-        },
+        }
     }, {
         location: '10.2.91.7:8486',
         key: '[bucketizer]emissary-nest-fhz08',
@@ -61,35 +64,37 @@ function prove (okay) {
         island: 'bucketizer',
         id: 'emissary-nest-fhz08',
         republic: null,
-        promise: null,
         leader: null,
-        government: null
+        government: {
+            promise: '0/0'
+        }
     }]), 'collapsed')
     okay(recoverable([{
             republic: '0',
-            promise: '1/0'
+            government: {
+                promise: '1/0'
+            }
         }, {
             republic: '1',
             id: '1',
-            promise: '3/0',
             government: {
+                promise: '3/0',
                 majority: [ '1', '2' ],
                 minority: ['3' ]
             }
         }, {
             republic: '1',
             id: '2',
-            promise: '3/0',
             government: {
+                promise: '3/0',
                 majority: [ '1', '2' ],
                 minority: ['3' ]
             }
-        },
-        {
+        }, {
             republic: '1',
             id: '3',
-            promise: '3/0',
             government: {
+                promise: '3/0',
                 majority: [ '1', '2' ],
                 minority: ['3' ]
             }
