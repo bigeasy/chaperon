@@ -203,7 +203,7 @@ Chaperon.prototype._actions = function (islands) {
         // For now we are going to return halted and count on our
         // environment to handle this, maybe by waking the admin.
         } else if (island.recoverable.length > 1) {
-            return null
+            actions[name] = null
         // TODO (Not true yet.) Otherwise we should tell any arriving
         // participants to join the current consensus. We tell the participant
         // to join by messaging the leader. This is a race condition since

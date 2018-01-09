@@ -1,4 +1,4 @@
-require('proof')(9, prove)
+require('proof')(10, prove)
 
 function prove (okay) {
     var Chaperon = require('../chaperon')
@@ -222,4 +222,37 @@ function prove (okay) {
             }
         }]
     }, 'join')
+    okay(chaperon._actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [],
+            recoverable: [{
+                republic: 1,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 1,
+                    id: '3',
+                    url: 'http://127.0.0.1:8486/colleague/3',
+                    government: { promise: 'a/0', majority: [ '3' ], minority: [] }
+                }]
+            }, {
+                republic: 2,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 2,
+                    id: '4',
+                    url: 'http://127.0.0.1:8486/colleague/4',
+                    government: { promise: 'a/0', majority: [ '4' ], minority: [] }
+                }]
+            }],
+            unrecoverable: []
+        }
+    }), {
+        island: null
+    }, 'split brain')
 }
