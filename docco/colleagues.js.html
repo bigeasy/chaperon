@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>colleagues.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+
+
+                <a class="source" href="chaperon.bin.js.html">
+                  chaperon.bin.js
+                </a>
+
+
+                <a class="source" href="chaperon.js.html">
+                  chaperon.js
+                </a>
+
+
+                <a class="source" href="colleagues.js.html">
+                  colleagues.js
+                </a>
+
+
+                <a class="source" href="gatherer.js.html">
+                  gatherer.js
+                </a>
+
+
+                <a class="source" href="recoverable.js.html">
+                  recoverable.js
+                </a>
+
+
+                <a class="source" href="unrecoverable.js.html">
+                  unrecoverable.js
+                </a>
+
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    <ul class="sections">
+
+          <li id="title">
+              <div class="annotation">
+                  <h1>colleagues.js</h1>
+              </div>
+          </li>
+
+
+
+        <li id="section-1">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Gather up all the active colleagues by first finding all the active conduits
+through resource discovery, then querying the active conduits for active
+colleagues.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-2">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Common utilities.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">'url'</span>)
+<span class="hljs-keyword">var</span> util = <span class="hljs-built_in">require</span>(<span class="hljs-string">'util'</span>)
+<span class="hljs-keyword">var</span> path_ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>)
+<span class="hljs-keyword">var</span> coalesce = <span class="hljs-built_in">require</span>(<span class="hljs-string">'extant'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-3">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Control-flow utilities.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
+
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.logger'</span>).createLogger(<span class="hljs-string">'chaperon'</span>)
+
+<span class="hljs-keyword">var</span> nullify = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vizsla/nullify'</span>)
+<span class="hljs-keyword">var</span> jsonify = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vizsla/jsonify'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-4">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create a client with the given user agent that will query the Mingle end
+point URL at <code>mingle</code>. The <code>conduit</code> and <code>colleague</code> arguments are string
+formats used to create the URLs to query the conduit and colleague
+respectively.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-5">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Colleagues</span> (<span class="hljs-params">options</span>) </span>{
+    <span class="hljs-keyword">this</span>._ua = options.ua
+    <span class="hljs-keyword">this</span>._mingle = options.mingle
+    <span class="hljs-keyword">this</span>._conduit = options.conduit
+    <span class="hljs-keyword">this</span>._colleague = options.colleague
+}
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Fetch an array of all the active colleagues.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Colleagues.prototype.get = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async</span>) </span>{
+    <span class="hljs-keyword">var</span> colleagues = []
+    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Array</span>.isArray(<span class="hljs-keyword">this</span>._mingle)) {
+            <span class="hljs-keyword">return</span> [ <span class="hljs-keyword">this</span>._mingle ]
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">this</span>._ua.fetch({ <span class="hljs-attr">url</span>: <span class="hljs-keyword">this</span>._mingle, <span class="hljs-attr">nullify</span>: <span class="hljs-literal">true</span> }, <span class="hljs-keyword">async</span>())
+        }
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">got</span>) </span>{
+        <span class="hljs-keyword">async</span>.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">conduitUrl</span>) </span>{
+            <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">this</span>._ua.fetch({ <span class="hljs-attr">url</span>: url.resolve(conduitUrl, <span class="hljs-string">'./health'</span>), <span class="hljs-attr">nullify</span>: <span class="hljs-literal">true</span> }, <span class="hljs-keyword">async</span>())
+            }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">conduit</span>) </span>{
+                logger.info(<span class="hljs-string">'conduit'</span>, { <span class="hljs-attr">url</span>: conduitUrl, <span class="hljs-attr">$response</span>: conduit })
+                <span class="hljs-keyword">async</span>.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">path</span>) </span>{
+                    <span class="hljs-keyword">var</span> parsed = url.parse(url.resolve(conduitUrl + <span class="hljs-string">'/'</span>, <span class="hljs-string">'./'</span> +  path + <span class="hljs-string">'/'</span>))
+                    parsed.path = parsed.pathname = path_.normalize(<span class="hljs-built_in">String</span>(parsed.pathname))
+                    <span class="hljs-keyword">var</span> colleagueUrl = url.format(parsed)
+                    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">this</span>._ua.fetch({
+                            <span class="hljs-attr">url</span>: url.resolve(colleagueUrl, <span class="hljs-string">'health'</span>),
+                            <span class="hljs-attr">gateways</span>: [ nullify(), jsonify({}) ]
+                        }, <span class="hljs-keyword">async</span>())
+                    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">got</span>) </span>{
+                        <span class="hljs-keyword">if</span> (got == <span class="hljs-literal">null</span>) {
+                            <span class="hljs-keyword">return</span>
+                        }
+                        <span class="hljs-built_in">console</span>.log(got)
+                        colleagues.push({
+                            <span class="hljs-attr">island</span>: got.island,
+                            <span class="hljs-attr">republic</span>: got.republic,
+                            <span class="hljs-attr">id</span>: got.id,
+                            <span class="hljs-attr">startedAt</span>: got.startedAt,
+                            <span class="hljs-attr">url</span>: colleagueUrl,
+                            <span class="hljs-attr">promise</span>: got.government.promise,
+                            <span class="hljs-attr">government</span>: got.government
+                        })
+                    })
+                })(coalesce(coalesce(conduit, { <span class="hljs-attr">paths</span>: [] }).paths, []))
+            })
+        })(coalesce(got, []))
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">return</span> [ colleagues ]
+    })
+})
+
+<span class="hljs-built_in">module</span>.exports = Colleagues
+
+</pre></div></div>
+
+        </li>
+
+    </ul>
+  </div>
+</body>
+</html>
