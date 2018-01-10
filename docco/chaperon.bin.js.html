@@ -30,13 +30,18 @@
                 </a>
 
 
-                <a class="source" href="immigration.js.html">
-                  immigration.js
+                <a class="source" href="colleagues.js.html">
+                  colleagues.js
                 </a>
 
 
-                <a class="source" href="transform.js.html">
-                  transform.js
+                <a class="source" href="gatherer.js.html">
+                  gatherer.js
+                </a>
+
+
+                <a class="source" href="recoverable.js.html">
+                  recoverable.js
                 </a>
 
 
@@ -80,14 +85,11 @@
         -b, --bind &lt;address:port&gt;
             address and port to bind to
 
-        -d, --discovery &lt;url&gt;
+        -m, --mingle &lt;url&gt;
             discovery url
 
-        -c, --colleagues &lt;url&gt;
-            colleagues url pattern
-
-        -H, --health &lt;url pattern&gt;
-            health url pattern
+        -s, --stable &lt;url&gt;
+            how long ot wait to determine that the collection of hosts is stable
 
         --help
             display help message
@@ -95,51 +97,65 @@
     ___ $ ___ en_US ___
 
         bind is required:
-            the `--bind` argument is a required argumen
+            the `--bind` argument is a required argument
 
         name is required:
-            the `--name` argument is a required argumen
+            the `--name` argument is a required argument
     ___ . ___
 
  */</span>
 <span class="hljs-built_in">require</span>(<span class="hljs-string">'arguable'</span>)(<span class="hljs-built_in">module</span>, <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, program</span>) </span>{
     <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>)
 
+    <span class="hljs-keyword">var</span> Destructible = <span class="hljs-built_in">require</span>(<span class="hljs-string">'destructible'</span>)
+
     <span class="hljs-keyword">var</span> Shuttle = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.shuttle'</span>)
     <span class="hljs-keyword">var</span> abend = <span class="hljs-built_in">require</span>(<span class="hljs-string">'abend'</span>)
     <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>)
+    <span class="hljs-keyword">var</span> delta = <span class="hljs-built_in">require</span>(<span class="hljs-string">'delta'</span>)
 
     <span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.logger'</span>).createLogger(<span class="hljs-string">'chaperon'</span>)
 
     <span class="hljs-keyword">var</span> shuttle = Shuttle.shuttle(program, logger)
 
+    <span class="hljs-keyword">var</span> destructible = <span class="hljs-keyword">new</span> Destructible(<span class="hljs-string">'chaperon'</span>)
+
+    program.on(<span class="hljs-string">'shutdown'</span>, destructible.destroy.bind(destructible))
+
     program.helpIf(program.ultimate.help)
-    program.required(<span class="hljs-string">'discovery'</span>, <span class="hljs-string">'health'</span>, <span class="hljs-string">'bind'</span>)
+    program.required(<span class="hljs-string">'mingle'</span>, <span class="hljs-string">'bind'</span>)
     program.validate(<span class="hljs-built_in">require</span>(<span class="hljs-string">'arguable/bindable'</span>), <span class="hljs-string">'bind'</span>)
 
     <span class="hljs-keyword">var</span> bind = program.ultimate.bind
 
     <span class="hljs-keyword">var</span> Vizsla = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vizsla'</span>)
     <span class="hljs-keyword">var</span> Chaperon = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./chaperon'</span>)
-    <span class="hljs-keyword">var</span> Uptime = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mingle.uptime'</span>)
-    <span class="hljs-keyword">var</span> uptime = <span class="hljs-keyword">new</span> Uptime(program.ultimate.discovery, program.ultimate.colleagues, <span class="hljs-keyword">new</span> Vizsla)
-    <span class="hljs-keyword">var</span> chaperon = <span class="hljs-keyword">new</span> Chaperon(<span class="hljs-keyword">new</span> Vizsla, uptime, program.ultimate.health)
+    <span class="hljs-keyword">var</span> Colleagues = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./colleagues'</span>)
 
-    <span class="hljs-keyword">var</span> Isochronous = <span class="hljs-built_in">require</span>(<span class="hljs-string">'isochronous'</span>)
-    <span class="hljs-keyword">var</span> isochronous = <span class="hljs-keyword">new</span> Isochronous({
-        <span class="hljs-attr">operation</span>: { <span class="hljs-attr">object</span>: chaperon, <span class="hljs-attr">method</span>: <span class="hljs-string">'health'</span> },
-        <span class="hljs-attr">interval</span>: <span class="hljs-number">30000</span>
+    <span class="hljs-keyword">var</span> destroyer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'server-destroy'</span>)
+
+    <span class="hljs-keyword">var</span> colleagues = <span class="hljs-keyword">new</span> Colleagues({
+        <span class="hljs-attr">ua</span>: <span class="hljs-keyword">new</span> Vizsla,
+        <span class="hljs-attr">mingle</span>: program.ultimate.mingle
     })
-    isochronous.run(abend)
 
-    program.on(<span class="hljs-string">'shutdown'</span>, isochronous.stop.bind(isochronous))
-    program.on(<span class="hljs-string">'shutdown'</span>, shuttle.close.bind(shuttle))
+    <span class="hljs-keyword">var</span> chaperon = <span class="hljs-keyword">new</span> Chaperon({
+        <span class="hljs-attr">colleagues</span>: colleagues,
+        <span class="hljs-attr">stableAfter</span>: (+(program.ultimate.stable) || <span class="hljs-number">30</span>) * <span class="hljs-number">1000</span>
+    })
 
-    logger.info(<span class="hljs-string">'started'</span>, { <span class="hljs-attr">parameters</span>: program.ultimate, <span class="hljs-attr">$vargs</span>: program.vargs })
+    destructible.addDestructor(<span class="hljs-string">'shuttle'</span>, shuttle, <span class="hljs-string">'close'</span>)
 
-    <span class="hljs-keyword">var</span> server = http.createServer(chaperon.dispatcher.createWrappedDispatcher())
-    server.listen(bind.port, bind.address, <span class="hljs-keyword">async</span>())
-    program.on(<span class="hljs-string">'SIGINT'</span>, server.close.bind(server))
+    <span class="hljs-keyword">var</span> server = http.createServer(chaperon.reactor.middleware)
+    destroyer(server)
+    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        server.listen(bind.port, bind.address, <span class="hljs-keyword">async</span>())
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        logger.info(<span class="hljs-string">'started'</span>, { <span class="hljs-attr">parameters</span>: program.ultimate, <span class="hljs-attr">$vargs</span>: program.vargs })
+        destructible.addDestructor(<span class="hljs-string">'http'</span>, server, <span class="hljs-string">'destroy'</span>)
+        delta(<span class="hljs-keyword">async</span>()).ee(server).on(<span class="hljs-string">'close'</span>)
+        program.ready.unlatch()
+    })
 }))
 
 </pre></div></div>

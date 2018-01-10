@@ -30,13 +30,18 @@
                 </a>
 
 
-                <a class="source" href="immigration.js.html">
-                  immigration.js
+                <a class="source" href="colleagues.js.html">
+                  colleagues.js
                 </a>
 
 
-                <a class="source" href="transform.js.html">
-                  transform.js
+                <a class="source" href="gatherer.js.html">
+                  gatherer.js
+                </a>
+
+
+                <a class="source" href="recoverable.js.html">
+                  recoverable.js
                 </a>
 
 
@@ -66,7 +71,7 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <p>Last time you came back to this project, you couldn’t understand why it is a
-separate process and not a library run by the Colleague. No reason. Only tha
+separate process and not a library run by the Colleague. No reason. Only that
 it is doing something rather different, so it may as well run in it’s own
 process, because with Node.js processes are like threads. If there is a
 problem with discovery, in production, we’ll see problems with this process
@@ -97,81 +102,14 @@ It uses HTTP because that’s our default RPC protocol.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>TODO Things like this need a careful name auditing.
-TODO What is that supposed to mean; “name auditing?”</p>
+              <p>Common utilities.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
-<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.logger'</span>).createLogger(<span class="hljs-string">'chaperon'</span>)
-<span class="hljs-keyword">var</span> unrecoverable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./unrecoverable'</span>)
-<span class="hljs-keyword">var</span> immigration = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./immigration'</span>)
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> coalesce = <span class="hljs-built_in">require</span>(<span class="hljs-string">'extant'</span>)
 <span class="hljs-keyword">var</span> util = <span class="hljs-built_in">require</span>(<span class="hljs-string">'util'</span>)
-<span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'assert'</span>)
-<span class="hljs-keyword">var</span> transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./transform'</span>)
-<span class="hljs-keyword">var</span> concat = [].conca
-<span class="hljs-keyword">var</span> log = logger.trace.bind(logger)
-<span class="hljs-keyword">var</span> Monotonic = <span class="hljs-built_in">require</span>(<span class="hljs-string">'monotonic'</span>).asString
-<span class="hljs-keyword">var</span> Dispatcher = <span class="hljs-built_in">require</span>(<span class="hljs-string">'inlet/dispatcher'</span>)
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Chaperon</span> (<span class="hljs-params">ua, uptime, health</span>) </span>{
-    <span class="hljs-keyword">this</span>._ua = ua
-    <span class="hljs-keyword">this</span>._uptime = uptime
-    <span class="hljs-keyword">this</span>._stableAfter = <span class="hljs-number">900</span>
-    <span class="hljs-keyword">this</span>._duraiton = <span class="hljs-number">0</span>
-    <span class="hljs-keyword">this</span>._stability = {}
-    <span class="hljs-keyword">this</span>._health = health
-    <span class="hljs-keyword">this</span>._participating = {}
-    <span class="hljs-keyword">var</span> dispatcher = <span class="hljs-keyword">new</span> Dispatcher(<span class="hljs-keyword">this</span>)
-    dispatcher.dispatch(<span class="hljs-string">'GET /'</span>, <span class="hljs-string">'index'</span>)
-    dispatcher.dispatch(<span class="hljs-string">'POST /action'</span>, <span class="hljs-string">'action'</span>)
-    dispatcher.dispatch(<span class="hljs-string">'GET /health'</span>, <span class="hljs-string">'health'</span>)
-    <span class="hljs-keyword">this</span>.dispatcher = dispatcher
-}
-
-Chaperon.prototype.index = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-string">'Compassion Chaperon API\n'</span>
-})
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Group</span> (<span class="hljs-params">groupBy, collection, array</span>) </span>{
-    <span class="hljs-keyword">var</span> groups = []
-    array.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">element</span>) </span>{
-        <span class="hljs-keyword">var</span> group = groups.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">group</span>) </span>{
-            <span class="hljs-keyword">return</span> group[groupBy] == element[groupBy]
-        }).shift()
-        <span class="hljs-keyword">if</span> (!group) {
-            group = {}
-            group[groupBy] = element[groupBy]
-            group[collection] = []
-            groups.push(group)
-        }
-        group[collection].push(element)
-    })
-    <span class="hljs-keyword">this</span>.array = groups
-    <span class="hljs-keyword">this</span>.map = {}
-    <span class="hljs-keyword">this</span>.null = <span class="hljs-literal">null</span>
-    <span class="hljs-keyword">this</span>.array.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">group</span>) </span>{
-        <span class="hljs-keyword">if</span> (group[groupBy] == <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">this</span>.null = group
-        } <span class="hljs-keyword">else</span> {
-            <span class="hljs-keyword">this</span>.map[group[groupBy]] = group
-        }
-    }, <span class="hljs-keyword">this</span>)
-}
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">comparator</span> (<span class="hljs-params">keys</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">a, b</span>) </span>{
-        <span class="hljs-keyword">var</span> compare = <span class="hljs-number">0</span>
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, I = keys.length; i &lt; I; i++) {
-            <span class="hljs-keyword">var</span> key = keys[i]
-            <span class="hljs-keyword">var</span> compare = a[key] &lt; b[key] ? <span class="hljs-number">-1</span> : a[key] &gt; b[key] ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>
-            <span class="hljs-keyword">if</span> (compare != <span class="hljs-number">0</span>) {
-                <span class="hljs-keyword">break</span>
-            }
-        }
-        <span class="hljs-keyword">return</span> compare
-    }
-}
+<span class="hljs-keyword">var</span> ascension = <span class="hljs-built_in">require</span>(<span class="hljs-string">'ascension'</span>)
 
 </pre></div></div>
 
@@ -184,67 +122,21 @@ Chaperon.prototype.index = cadence(<span class="hljs-function"><span class="hljs
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>If we have been stable in machine count and availablity for more than thirty
-seconds, then if we have an unrecoverable Paxos island, let’s reboot the
-consensus, otherwise look for machines that are not part of stable island..</p>
+              <p>Control-flow utilities.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>
-Chaperon.prototype._maybeAction = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleagues, request, now</span>) </span>{
-    <span class="hljs-keyword">var</span> colleagues = colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
-        <span class="hljs-keyword">return</span> colleague.islandName = request.islandName
-    })
-    <span class="hljs-keyword">var</span> stablity = <span class="hljs-keyword">this</span>._stability[request.islandName]
-    <span class="hljs-keyword">if</span> (stablity == <span class="hljs-literal">null</span>) {
-        stablity = <span class="hljs-keyword">this</span>._stability[request.islandName] = { <span class="hljs-attr">lastChecked</span>: <span class="hljs-literal">null</span>, <span class="hljs-attr">previous</span>: [] }
-    }
-    <span class="hljs-keyword">var</span> current = colleagues.slice().map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
-        <span class="hljs-keyword">return</span> { <span class="hljs-attr">key</span>: colleague.key, <span class="hljs-attr">startedAt</span>: colleague.startedAt }
-    }).sort(comparator(<span class="hljs-string">'key'</span>, <span class="hljs-string">'startedAt'</span>))
-    <span class="hljs-keyword">if</span> (current.length == stablity.previous.length
-        &amp;&amp; current.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague, index</span>) </span>{
-            <span class="hljs-keyword">return</span> stablity.previous[index] != <span class="hljs-literal">null</span>
-                &amp;&amp; stablity.previous[index].key == colleague.key
-                &amp;&amp; stablity.previous[index].startedAt == colleague.startedA
-        }).length == current.length) {
-        stablity.duration = now - stablity.lastChecked
-    } <span class="hljs-keyword">else</span> {
-        stablity.duration = <span class="hljs-number">0</span>
-    }
-    stablity.lastChecked = now
-    stablity.previous = curren
-    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>._stableAfter &lt;= stablity.duration) {
-        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._action(colleagues, request)
-    } <span class="hljs-keyword">else</span> {
-        <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'unstable'</span>, <span class="hljs-attr">vargs</span>: [] }
-    }
-}
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cadence = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cadence'</span>)
 
-Chaperon.prototype._action = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleagues, request</span>) </span>{
-    <span class="hljs-keyword">var</span> instances = colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
-        <span class="hljs-keyword">return</span> colleague.colleagueId == request.colleagueId
-    })
-    <span class="hljs-keyword">switch</span> (instances.length) {
-    <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
-        <span class="hljs-keyword">if</span> (instances[<span class="hljs-number">0</span>].startedAt != <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">if</span> (instances[<span class="hljs-number">0</span>].islandId != request.islandId) {
-                <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'garbled'</span>, <span class="hljs-attr">vargs</span>: [] }
-            }
-            <span class="hljs-keyword">return</span> reachable(instances[<span class="hljs-number">0</span>])
-        }
-    <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
-        <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'unreachable'</span>, <span class="hljs-attr">vargs</span>: [] }
-    <span class="hljs-keyword">default</span>:
-        <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'duplicates'</span>, <span class="hljs-attr">vargs</span>: [instances] }
-    }
+<span class="hljs-keyword">var</span> Monotonic = <span class="hljs-built_in">require</span>(<span class="hljs-string">'monotonic'</span>).asString
 
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reachable</span> (<span class="hljs-params">instance</span>) </span>{
-        <span class="hljs-keyword">var</span> instances = <span class="hljs-keyword">new</span> Group(<span class="hljs-string">'islandId'</span>, <span class="hljs-string">'colleagues'</span>, colleagues)
-        instances.array.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">instance</span>) </span>{
-            instance.unrecoverable = instance.islandId == <span class="hljs-literal">null</span>
-                || unrecoverable(instance.colleagues)
-        })
+
+<span class="hljs-keyword">var</span> logger = <span class="hljs-built_in">require</span>(<span class="hljs-string">'prolific.logger'</span>).createLogger(<span class="hljs-string">'chaperon'</span>)
+<span class="hljs-keyword">var</span> unrecoverable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./unrecoverable'</span>)
+<span class="hljs-keyword">var</span> recoverable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./recoverable'</span>)
+
+<span class="hljs-keyword">var</span> Uptime = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mingle.uptime'</span>)
+
 </pre></div></div>
 
         </li>
@@ -256,105 +148,306 @@ Chaperon.prototype._action = <span class="hljs-function"><span class="hljs-keywo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Check for split brain. Let’s hope this doesn’t happen. Get all of the
-island instances that are recoverable and assert that there is only
-one such island instance.</p>
+              <p>Bind an object to Sencha Connect middleware.</p>
 
             </div>
 
-            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> recoverable = instances.array.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">instance</span>) </span>{
-            <span class="hljs-keyword">return</span> ! instance.unrecoverable
-        })
-        <span class="hljs-keyword">if</span> (recoverable.length &gt; <span class="hljs-number">1</span>) {
-            logger.error(<span class="hljs-string">'splitBrain'</span>, { <span class="hljs-attr">$instances</span>: recoverable })
-            recoverable.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">instance</span>) </span>{ instance.splitBrain = <span class="hljs-literal">true</span> })
-            <span class="hljs-keyword">if</span> (request.islandId == <span class="hljs-literal">null</span>) {
-                <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'splitBrain'</span>, <span class="hljs-attr">vargs</span>: [] }
-            } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (instances.map[request.islandId].splitBrain) {
-                <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'splitBrain'</span>, <span class="hljs-attr">vargs</span>: [] }
-            }
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Reactor = <span class="hljs-built_in">require</span>(<span class="hljs-string">'reactor'</span>)
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-6">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Most-recently used cache.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Cache = <span class="hljs-built_in">require</span>(<span class="hljs-string">'magazine'</span>)
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Chaperon</span> (<span class="hljs-params">options</span>) </span>{
+    <span class="hljs-keyword">this</span>._colleagues = options.colleagues
+    <span class="hljs-keyword">this</span>._stableAfter = options.stableAfter
+    <span class="hljs-keyword">this</span>._Date = coalesce(options.Date, <span class="hljs-built_in">Date</span>)
+    <span class="hljs-keyword">this</span>._uptimes = <span class="hljs-keyword">new</span> Cache().createMagazine()
+    <span class="hljs-keyword">this</span>.reactor = <span class="hljs-keyword">new</span> Reactor(<span class="hljs-keyword">this</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">dispatcher</span>) </span>{
+        dispatcher.dispatch(<span class="hljs-string">'GET /'</span>, <span class="hljs-string">'index'</span>)
+        dispatcher.dispatch(<span class="hljs-string">'POST /action'</span>, <span class="hljs-string">'action'</span>)
+        dispatcher.dispatch(<span class="hljs-string">'GET /health'</span>, <span class="hljs-string">'health'</span>)
+    })
+}
+
+Chaperon.prototype.index = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> [ <span class="hljs-number">200</span>, { <span class="hljs-string">'content-type'</span>: <span class="hljs-string">'text/plain'</span> }, <span class="hljs-string">'Compassion Chaperon API\n'</span> ]
+})
+
+<span class="hljs-keyword">var</span> byStartedAtThenId = ascension([ <span class="hljs-built_in">Number</span>, <span class="hljs-built_in">String</span> ], <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">object</span>) </span>{
+    <span class="hljs-keyword">return</span> [ object.startedAt, object.id ]
+})
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-7">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>The chaperon is going to make a best effort get newly booted islanders onto
+an island, or to get a newly booted islander to form an island if none
+exists. It takes the place of the sysadmin that would issue commands to
+bootstrap a new consensus and to tell new participants to join an existing
+consensus. It is not meant to be a consensus alogrithm in itself. It cannot
+make intelligent decisions about all failure cases.</p>
+<p>The chaperon polls the discovery end point to get a collection of network
+conduits. It then polls the network conduits to get a collection of
+partipants. It waits for a while to ensure that that the collection of
+participants is stable. It then makes a decision based on what the
+participants have to say for themselves.</p>
+<p>If the chaperon cannot get a healthy response from all the network conduits
+then it will not make a decision and instead wait for the network conduits to
+become stable.</p>
+<p>We are going to poll every member returned by discovery, so if the list of
+network conduits returned discovery endpoint is missing a conduit, the
+chaperon is going to make a bad decision.</p>
+<p>TODO Split brain is unrecoverable. The Chaperon will detect it. It is an
+unlikely state, it seems, but I’m not certain. It is definately a possiblity
+if the discovery end point returns an incomplete list of network conduits.
+We’re probably going to want to look for this state in the logs in case we
+miss it in the chaperon.</p>
+<p>TODO Describe the <code>rejoining</code> property which will cause the chaperon to halt
+if it the chaperon is either forming a new consensus or if the consensus id
+is not the same as the consensus id indicated by the <code>rejoining</code> property.</p>
+<p>TODO Clever word for <code>uninitialized</code> which could be instead <code>booted</code> or
+<code>arriving</code> or something.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-8">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>Chaperon.prototype._actions = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">islands</span>) </span>{
+    <span class="hljs-keyword">var</span> actions = {}
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-9">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Chose an action for each island. A null list of actions indicates that
+the island has halted.</p>
+
+            </div>
+
+        </li>
+
+
+        <li id="section-10">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> name <span class="hljs-keyword">in</span> islands) {
+        <span class="hljs-keyword">var</span> island = islands[name]
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-11">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>An array of actions to take keyed by island name.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        actions[name] = []
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-12">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>If the island is not stable there is no action to take.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (!island.stable) {
+            <span class="hljs-keyword">continue</span>
         }
-        <span class="hljs-keyword">if</span> (request.islandId == <span class="hljs-literal">null</span>) {
-            <span class="hljs-keyword">if</span> (recoverable.length == <span class="hljs-number">0</span>) {
-                <span class="hljs-keyword">var</span> oldest = instances.null.colleagues.sort(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">a, b</span>) </span>{
-                    <span class="hljs-keyword">return</span> a.startedAt - b.startedA
-                }).shift()
-                <span class="hljs-keyword">if</span> (oldest.colleagueId == request.colleagueId) {
-                    <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'bootstrap'</span>, <span class="hljs-attr">vargs</span>: [] }
+
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-13">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>If the there are no current recoverable consensuses then we are going
+to bootstrap a new conensus.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (island.recoverable.length == <span class="hljs-number">0</span>) {
+            <span class="hljs-keyword">if</span> (island.uninitialized.length != <span class="hljs-number">0</span>) {
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-14">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>If anyone of are participants believes it is going to rejoin an
+existing consensus then we halt.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">if</span> (island.uninitialized[<span class="hljs-number">0</span>].colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
+                    <span class="hljs-keyword">return</span> colleague.rejoining != <span class="hljs-literal">null</span>
+                }).length != <span class="hljs-number">0</span>) {
+                    actions[name] = <span class="hljs-literal">null</span>
                 } <span class="hljs-keyword">else</span> {
-                    <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'unstable'</span>, <span class="hljs-attr">vargs</span>: [] }
-                }
-            } <span class="hljs-keyword">else</span> {
-                <span class="hljs-keyword">var</span> leaderId = recoverable[<span class="hljs-number">0</span>].colleagues.sort(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">a, b</span>) </span>{
-                    <span class="hljs-keyword">return</span> Monotonic.compare(b.promise, a.promise)
-                })[<span class="hljs-number">0</span>].parliament[<span class="hljs-number">0</span>]
-                <span class="hljs-keyword">var</span> leader = recoverable[<span class="hljs-number">0</span>].colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
-                    <span class="hljs-keyword">return</span> colleague.colleagueId == leaderId
-                }).shift()
-                <span class="hljs-keyword">return</span> {
-                    <span class="hljs-attr">name</span>: <span class="hljs-string">'join'</span>,
-                    <span class="hljs-attr">vargs</span>: [{
-                        <span class="hljs-attr">location</span>: leader.location,
-                        <span class="hljs-attr">islandId</span>: leader.islandId,
-                        <span class="hljs-attr">islandName</span>: leader.islandName,
-                        <span class="hljs-attr">colleagueId</span>: leader.colleagueId
-                    }]
+                    <span class="hljs-keyword">var</span> oldest = island.uninitialized[<span class="hljs-number">0</span>].colleagues.slice().sort(byStartedAtThenId).shift()
+                    actions[name].push({ <span class="hljs-attr">action</span>: <span class="hljs-string">'bootstrap'</span>, <span class="hljs-attr">colleague</span>: oldest })
                 }
             }
-        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (instances.map[request.islandId].unrecoverable) {
-            <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'unrecoverable'</span>, <span class="hljs-attr">vargs</span>: [] }
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-15">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>This is split brain. Not really sure what the right answer is. It
+is a bad state that has different meanings for different
+applications.</p>
+<p>Split brain could occur if an entire island is unreachable to the
+Chaperon when a new participant arrives. That new participant
+would become a dictator. The missing island becomes reachable and
+now we have a split brain. This is unlikely on a local network,
+so I don’t have any real world experience with it.</p>
+<p>For now we are going to return halted and count on our
+environment to handle this, maybe by waking the admin.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (island.recoverable.length &gt; <span class="hljs-number">1</span>) {
+            actions[name] = <span class="hljs-literal">null</span>
+</pre></div></div>
+
+        </li>
+
+
+        <li id="section-16">
+            <div class="annotation">
+
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>TODO (Not true yet.) Otherwise we should tell any arriving
+participants to join the current consensus. We tell the participant
+to join by messaging the leader. This is a race condition since
+leadership can change. If the consensus is under new leadership when
+the participant trys to arrive it will crash restart.</p>
+
+            </div>
+
+            <div class="content"><div class='highlight'><pre>        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (
+            island.uninitialized.length != <span class="hljs-number">0</span> &amp;&amp;
+            island.uninitialized[<span class="hljs-number">0</span>].colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
+                <span class="hljs-keyword">return</span> !(
+                    colleague.rejoining == <span class="hljs-literal">null</span> ||
+                    colleague.rejoining == island.recoverable[<span class="hljs-number">0</span>].republic
+                )
+            }).length != <span class="hljs-number">0</span>
+        ) {
+            actions[name] = <span class="hljs-literal">null</span>
         } <span class="hljs-keyword">else</span> {
-            <span class="hljs-keyword">return</span> { <span class="hljs-attr">name</span>: <span class="hljs-string">'recoverable'</span>, <span class="hljs-attr">vargs</span>: [] }
+            <span class="hljs-keyword">var</span> leaderId = island.recoverable[<span class="hljs-number">0</span>].colleagues.sort(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">a, b</span>) </span>{
+                <span class="hljs-keyword">return</span> Monotonic.compare(b.government.promise, a.government.promise)
+            })[<span class="hljs-number">0</span>].government.majority[<span class="hljs-number">0</span>]
+            <span class="hljs-keyword">var</span> leader = island.recoverable[<span class="hljs-number">0</span>].colleagues.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
+                <span class="hljs-keyword">return</span> colleague.id == leaderId
+            }).shift()
+            island.uninitialized[<span class="hljs-number">0</span>].colleagues.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
+                actions[name].push({
+                    <span class="hljs-attr">action</span>: <span class="hljs-string">'join'</span>,
+                    <span class="hljs-attr">republic</span>: leader.republic,
+                    <span class="hljs-attr">url</span>: {
+                        <span class="hljs-attr">self</span>: colleague.url,
+                        <span class="hljs-attr">leader</span>: leader.url
+                    },
+                    <span class="hljs-attr">colleague</span>: colleague
+                })
+            })
         }
     }
+    <span class="hljs-keyword">return</span> actions
 }
 
 Chaperon.prototype.action = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">async, request</span>) </span>{
     <span class="hljs-keyword">var</span> colleagues = {}
     <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-        <span class="hljs-keyword">this</span>._uptime.get(<span class="hljs-keyword">async</span>())
-    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) </span>{
-        <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">async</span>.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">machine</span>) </span>{
-                <span class="hljs-keyword">if</span> (machine.health == <span class="hljs-literal">null</span>) {
-                    <span class="hljs-keyword">return</span> []
-                }
-                <span class="hljs-keyword">async</span>.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleague</span>) </span>{
-                    <span class="hljs-keyword">async</span>(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-                        <span class="hljs-keyword">this</span>._ua.fetch({
-                            <span class="hljs-attr">url</span>: util.format(<span class="hljs-keyword">this</span>._health, machine.location),
-                            <span class="hljs-attr">post</span>: colleague,
-                            <span class="hljs-attr">log</span>: log,
-                            <span class="hljs-attr">nullify</span>: <span class="hljs-literal">true</span>
-                        }, <span class="hljs-keyword">async</span>())
-                    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">body</span>) </span>{
-                        <span class="hljs-keyword">if</span> (body != <span class="hljs-literal">null</span>) {
-                            <span class="hljs-keyword">var</span> key = <span class="hljs-string">'['</span> + colleague.islandName + <span class="hljs-string">']'</span> + colleague.colleagueId
-                            colleagues[key] = body
-                        }
-                    })
-                })(machine.health.colleagues)
-            })(response.machines)
-        }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-            <span class="hljs-keyword">return</span> {
-                <span class="hljs-attr">mingle</span>: response,
-                <span class="hljs-attr">colleagues</span>: colleagues
-            }
-        })
-    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">response</span>) </span>{
-        <span class="hljs-keyword">var</span> transformed = transform(response)
-        logger.trace(<span class="hljs-string">'transform'</span>, { <span class="hljs-attr">$request</span>: request.body, <span class="hljs-attr">$response</span>: response, <span class="hljs-attr">$transformed</span>: transformed })
-        <span class="hljs-keyword">var</span> action = <span class="hljs-keyword">this</span>._maybeAction(transformed, request.body, <span class="hljs-built_in">Date</span>.now())
-        logger.trace(<span class="hljs-string">'action'</span>, {
-            <span class="hljs-attr">action</span>: { <span class="hljs-attr">name</span>: action.name, <span class="hljs-attr">$vargs</span>: action.vargs },
-            <span class="hljs-attr">$colleague</span>: request.body
-        })
+        <span class="hljs-keyword">this</span>._colleagues.get(<span class="hljs-keyword">async</span>())
+    }, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">colleagues</span>) </span>{
+        logger.info(<span class="hljs-string">'request'</span>, { <span class="hljs-attr">$colleagues</span>: colleagues, <span class="hljs-attr">$request</span>: request.body })
+        <span class="hljs-keyword">var</span> action = <span class="hljs-keyword">this</span>._action(colleagues, request.body)
+        logger.info(<span class="hljs-string">'action'</span>, { <span class="hljs-attr">$action</span>: action, <span class="hljs-attr">copacetic</span>: !! action.copacetic })
         <span class="hljs-keyword">return</span> action
     })
 })
 
 Chaperon.prototype.health = cadence(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">var</span> health = { <span class="hljs-attr">http</span>: <span class="hljs-keyword">this</span>.dispatcher.turnstile.health }
+    <span class="hljs-keyword">var</span> health = { <span class="hljs-attr">http</span>: <span class="hljs-keyword">this</span>.reactor.turnstile.health }
     logger.info(<span class="hljs-string">'health'</span>, health)
     <span class="hljs-keyword">return</span> health
 })
