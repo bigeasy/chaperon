@@ -55,7 +55,9 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var Vizsla = require('vizsla')
     var Chaperon = require('./chaperon')
+    var Gatherer = require('./gatherer')
     var Colleagues = require('./colleagues')
+    var Middleware = require('./middleware')
 
     var destroyer = require('server-destroy')
 
@@ -64,14 +66,23 @@ require('arguable')(module, require('cadence')(function (async, program) {
         mingle: program.ultimate.mingle
     })
 
+    var gatherer = new Gatherer({
+        stableAfter: (+(program.ultimate.stable) || 30) * 1000
+    })
+
     var chaperon = new Chaperon({
         colleagues: colleagues,
-        stableAfter: (+(program.ultimate.stable) || 30) * 1000
     })
 
     destructible.addDestructor('shuttle', shuttle, 'close')
 
-    var server = http.createServer(chaperon.reactor.middleware)
+    var middleware = new Middleware({
+        colleagues: colleagues,
+        gatherer: gatherer,
+        chaperon: chaperon
+    })
+
+    var server = http.createServer(middleware.reactor.middleware)
     destroyer(server)
     async(function () {
         server.listen(bind.port, bind.address, async())

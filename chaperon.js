@@ -10,45 +10,17 @@
 
 //
 
-// Common utilities.
-var coalesce = require('extant')
-var util = require('util')
-
+// Generate a sort function.
 var ascension = require('ascension')
 
-// Control-flow utilities.
 var cadence = require('cadence')
 
 var Monotonic = require('monotonic').asString
 
-
 var logger = require('prolific.logger').createLogger('chaperon')
-var unrecoverable = require('./unrecoverable')
-var recoverable = require('./recoverable')
 
-var Uptime = require('mingle.uptime')
-
-// Bind an object to Sencha Connect middleware.
-var Reactor = require('reactor')
-
-// Most-recently used cache.
-var Cache = require('magazine')
-
-function Chaperon (options) {
-    this._colleagues = options.colleagues
-    this._stableAfter = options.stableAfter
-    this._Date = coalesce(options.Date, Date)
-    this._uptimes = new Cache().createMagazine()
-    this.reactor = new Reactor(this, function (dispatcher) {
-        dispatcher.dispatch('GET /', 'index')
-        dispatcher.dispatch('POST /action', 'action')
-        dispatcher.dispatch('GET /health', 'health')
-    })
+function Chaperon () {
 }
-
-Chaperon.prototype.index = cadence(function () {
-    return [ 200, { 'content-type': 'text/plain' }, 'Compassion Chaperon API\n' ]
-})
 
 var byStartedAtThenId = ascension([ Number, String ], function (object) {
     return [ object.startedAt, object.id ]
@@ -89,7 +61,7 @@ var byStartedAtThenId = ascension([ Number, String ], function (object) {
 // `arriving` or something.
 
 //
-Chaperon.prototype._actions = function (islands) {
+Chaperon.prototype.actions = function (islands) {
     var actions = {}
     // Chose an action for each island. A null list of actions indicates that
     // the island has halted.
@@ -172,23 +144,5 @@ Chaperon.prototype._actions = function (islands) {
     }
     return actions
 }
-
-Chaperon.prototype.action = cadence(function (async, request) {
-    var colleagues = {}
-    async(function () {
-        this._colleagues.get(async())
-    }, function (colleagues) {
-        logger.info('request', { $colleagues: colleagues, $request: request.body })
-        var action = this._action(colleagues, request.body)
-        logger.info('action', { $action: action, copacetic: !! action.copacetic })
-        return action
-    })
-})
-
-Chaperon.prototype.health = cadence(function () {
-    var health = { http: this.reactor.turnstile.health }
-    logger.info('health', health)
-    return health
-})
 
 module.exports = Chaperon

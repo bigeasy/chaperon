@@ -3,21 +3,15 @@ require('proof')(8, prove)
 function prove (okay) {
     var Chaperon = require('../chaperon')
     var now = 0
-    var chaperon = new Chaperon({
-        colleagues: {
-            get: function (callback) { callback(null, []) }
-        },
-        stableAfter: 1,
-        Date: { now: function () { return now } }
-    })
+    var chaperon = new Chaperon
 
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: false,
         }
     }), { island: [] },  'unstable action')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -26,7 +20,7 @@ function prove (okay) {
             unrecoverable: []
         }
     }), { island: [] }, 'empty action')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -62,7 +56,7 @@ function prove (okay) {
             }
         }]
     }, 'bootstrap')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -71,7 +65,7 @@ function prove (okay) {
             unrecoverable: []
         }
     }), { island: [] }, 'empty action')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -148,7 +142,7 @@ function prove (okay) {
             }
         }]
     }, 'join')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -181,7 +175,7 @@ function prove (okay) {
     }), {
         island: null
     }, 'split brain')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
@@ -209,7 +203,7 @@ function prove (okay) {
     }), {
         island: null,
     }, 'bootstrap with rejoining')
-    okay(chaperon._actions({
+    okay(chaperon.actions({
         island: {
             name: 'island',
             stable: true,
