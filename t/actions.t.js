@@ -1,4 +1,4 @@
-require('proof')(12, prove)
+require('proof')(8, prove)
 
 function prove (okay) {
     var Chaperon = require('../chaperon')
@@ -10,81 +10,7 @@ function prove (okay) {
         stableAfter: 1,
         Date: { now: function () { return now } }
     })
-    var colleagues = [{
-        island: 'island',
-        id: '1',
-        republic: 1,
-        government: {
-            promise: '2/0',
-            majority: [ '1' ],
-            minority: []
-        }
-    }, {
-        island: 'island',
-        id: '2',
-        republic: 1,
-        government: {
-            promise: '2/0',
-            majority: [ '1' ],
-            minority: []
-        }
-    }]
-    var islands = chaperon._gathered(colleagues)
-    okay(islands['island'].stable === false, 'unstable')
-    now++
-    var islands = chaperon._gathered(colleagues)
 
-    okay(islands['island'].stable, 'stable')
-    okay(islands['island'], {
-        name: 'island',
-        stable: true,
-        okay: true,
-        uninitialized: [],
-        recoverable: [{
-            republic: 1,
-            recoverable: true,
-            colleagues: [{
-                island: 'island',
-                republic: 1,
-                id: '1',
-                government: { promise: '2/0', majority: [ '1' ], minority: [] }
-            }, {
-                island: 'island',
-                republic: 1,
-                id: '2',
-                government: { promise: '2/0', majority: [ '1' ], minority: [] }
-            }]
-        }],
-        unrecoverable: []
-    }, 'gathered')
-    var colleagues = [{
-        island: 'island',
-        id: '1',
-        republic: null,
-        government: {
-            majority: [ '1' ],
-            minority: []
-        }
-    }]
-    var islands = chaperon._gathered(colleagues)
-    now++
-    var islands = chaperon._gathered(colleagues)
-    okay(islands['island'], {
-        name: 'island',
-        stable: true,
-        okay: true,
-        uninitialized: [{
-            republic: null,
-            colleagues: [{
-                island: 'island',
-                republic: null,
-                id: '1',
-                government: { majority: [ '1' ], minority: [] }
-            }]
-        }],
-        recoverable: [],
-        unrecoverable: []
-    }, 'gathered null')
     okay(chaperon._actions({
         island: {
             name: 'island',

@@ -50,79 +50,9 @@ Chaperon.prototype.index = cadence(function () {
     return [ 200, { 'content-type': 'text/plain' }, 'Compassion Chaperon API\n' ]
 })
 
-function group (groupBy, collection, list) {
-    var groups = {}, array = []
-    list.forEach(function (element) {
-        var group = array.filter(function (group) {
-            return group[groupBy] == element[groupBy]
-        }).shift()
-        if (!group) {
-            group = {}
-            group[groupBy] = element[groupBy]
-            group[collection] = []
-            array.push(group)
-        }
-        group[collection].push(element)
-    })
-    groups.array = array
-    groups.map = {}
-    groups.null = null
-    groups.array.forEach(function (group) {
-        if (group[groupBy] == null) {
-            groups.null = group
-        } else {
-            groups.map[group[groupBy]] = group
-        }
-    }, groups)
-    return groups
-}
-
 var byStartedAtThenId = ascension([ Number, String ], function (object) {
     return [ object.startedAt, object.id ]
 })
-
-Chaperon.prototype._gathered = function (colleagues) {
-    var islands = group('island', 'colleagues', colleagues).map
-    var gathered = {}
-    // Deterimine the actions for each island.
-    for (var islandName in islands) {
-        var island = islands[islandName]
-        gathered[islandName] = {
-            name: islandName,
-            stable: false,
-            okay: true,
-            uninitialized: null,
-            recoverable: null,
-            unrecoverable: null
-        }
-        // See if the colleagues that make up this island have stabilized.
-        var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
-        if (uptime.calculate(island.colleagues) < this._stableAfter) {
-            continue
-        }
-        gathered[islandName].stable = true
-        var republics = group('republic', 'colleagues', island.colleagues).array
-        gathered[islandName].uninitialized = republics.filter(function (republic) {
-            return republic.republic == null
-        })
-        var republics = republics.filter(function (republic) {
-            return republic.republic != null
-        })
-        // We're going to assume that we would not have started a new republic
-        // if the old was had become unrecoverable. Could be a chance that we
-        // actually have two functioning republics, so we'd want to make log
-        // this state since it is split brain. I've not seen it in the wild yet
-        // so I'm not overly converned about it at the moment.
-        gathered[islandName].recoverable = republics.filter(function (republic) {
-            return republic.recoverable = recoverable(republic.colleagues)
-        })
-        gathered[islandName].unrecoverable = republics.filter(function (republic) {
-            return ! republic.recoverable
-        })
-    }
-    this._uptimes.expire(1000 * 60 * 15)
-    return gathered
-}
 
 // The chaperon is going to make a best effort get newly booted islanders onto
 // an island, or to get a newly booted islander to form an island if none
