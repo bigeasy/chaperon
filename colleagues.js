@@ -13,7 +13,7 @@ var cadence = require('cadence')
 
 var logger = require('prolific.logger').createLogger('chaperon')
 
-var nullify = require('vizsla/nullify')
+var raiseify = require('vizsla/raiseify')
 var jsonify = require('vizsla/jsonify')
 
 // Create a client with the given user agent that will query the Mingle end
@@ -38,12 +38,18 @@ Colleagues.prototype.get = cadence(function (async) {
         if (Array.isArray(this._mingle)) {
             return [ this._mingle ]
         } else {
-            this._ua.fetch({ url: this._mingle, nullify: true }, async())
+            this._ua.fetch({
+                url: this._mingle,
+                gateways: [ raiseify(), jsonify({}) ]
+            }, async())
         }
     }, function (got) {
         async.map(function (conduitUrl) {
             async(function () {
-                this._ua.fetch({ url: url.resolve(conduitUrl, './health'), nullify: true }, async())
+                this._ua.fetch({
+                    url: url.resolve(conduitUrl, './health'),
+                    gateways: [ raiseify(), jsonify({}) ]
+                }, async())
             }, function (conduit) {
                 logger.info('conduit', { url: conduitUrl, $response: conduit })
                 async.map(function (path) {
@@ -53,13 +59,9 @@ Colleagues.prototype.get = cadence(function (async) {
                     async(function () {
                         this._ua.fetch({
                             url: url.resolve(colleagueUrl, 'health'),
-                            gateways: [ nullify(), jsonify({}) ]
+                            gateways: [ raiseify(), jsonify({}) ]
                         }, async())
                     }, function (got) {
-                        if (got == null) {
-                            return
-                        }
-                        console.log(got)
                         colleagues.push({
                             island: got.island,
                             republic: got.republic,
@@ -72,7 +74,7 @@ Colleagues.prototype.get = cadence(function (async) {
                     })
                 })(coalesce(coalesce(conduit, { paths: [] }).paths, []))
             })
-        })(coalesce(got, []))
+        })(got)
     }, function () {
         return [ colleagues ]
     })

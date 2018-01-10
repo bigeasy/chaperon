@@ -1,6 +1,6 @@
-require('proof')(2, require('cadence')(prove))
+require('proof')(3, require('cadence')(prove))
 
-function prove (async, assert) {
+function prove (async, okay) {
     var cadence = require('cadence')
     var Colleagues = require('../colleagues')
     var UserAgent = require('vizsla')
@@ -15,6 +15,7 @@ function prove (async, assert) {
             dispatcher.dispatch('GET /discover', 'discover')
             dispatcher.dispatch('GET /conduit/health', 'conduit')
             dispatcher.dispatch('GET /conduit/island/1/health', 'colleague')
+            dispatcher.dispatch('GET /conduit/island/2/health', 'colleague')
         })
     }
 
@@ -40,7 +41,7 @@ function prove (async, assert) {
         }
     }]
     Service.prototype.colleague = cadence(function (async) {
-        return coalesce(responses.shift(), null)
+        return responses.shift() || 503
     })
 
     var service = new Service
@@ -51,15 +52,57 @@ function prove (async, assert) {
         conduit: 'http://%s/conduit/'
     })
 
-    async(function () {
+    async([function () {
+        colleagues.get(async())
+    }, function (error) {
+        okay(error.statusCode, 503, 'caught error')
+        responses = [{
+            requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
+            island: 'island',
+            republic: 1,
+            startedAt: 1,
+            id: '1',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }, {
+            requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
+            island: 'island',
+            republic: 1,
+            startedAt: 2,
+            id: '2',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }]
+    }], function () {
         colleagues.get(async())
     }, function (colleagues) {
-        assert(colleagues, [{
+        okay(colleagues, [{
             island: 'island',
             republic: 1,
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
+            promise: '4/0',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }, {
+            island: 'island',
+            republic: 1,
+            startedAt: 2,
+            id: '2',
+            url: 'http://10.2.77.6:8486/conduit/island/2/',
             promise: '4/0',
             government: {
                 majority: [ '1', '2' ],
@@ -80,6 +123,18 @@ function prove (async, assert) {
                 constituents: [],
                 promise: '4/0'
             }
+        }, {
+            requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
+            island: 'island',
+            republic: 1,
+            startedAt: 2,
+            id: '2',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
         }]
         colleagues = new Colleagues({
             ua: ua,
@@ -87,12 +142,25 @@ function prove (async, assert) {
         })
         colleagues.get(async())
     }, function (colleagues) {
-        assert(colleagues, [{
+        okay(colleagues, [{
             island: 'island',
             republic: 1,
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
+            promise: '4/0',
+            government: {
+                majority: [ '1', '2' ],
+                minority: [ '3' ],
+                constituents: [],
+                promise: '4/0'
+            }
+        }, {
+            island: 'island',
+            republic: 1,
+            startedAt: 2,
+            id: '2',
+            url: 'http://10.2.77.6:8486/conduit/island/2/',
             promise: '4/0',
             government: {
                 majority: [ '1', '2' ],
