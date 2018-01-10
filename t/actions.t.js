@@ -1,17 +1,16 @@
 require('proof')(8, prove)
 
 function prove (okay) {
-    var Chaperon = require('../chaperon')
+    var actions = require('../actions')
     var now = 0
-    var chaperon = new Chaperon
 
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: false,
         }
     }), { island: [] },  'unstable action')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -20,7 +19,7 @@ function prove (okay) {
             unrecoverable: []
         }
     }), { island: [] }, 'empty action')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -56,7 +55,7 @@ function prove (okay) {
             }
         }]
     }, 'bootstrap')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -65,7 +64,7 @@ function prove (okay) {
             unrecoverable: []
         }
     }), { island: [] }, 'empty action')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -142,7 +141,7 @@ function prove (okay) {
             }
         }]
     }, 'join')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -175,7 +174,7 @@ function prove (okay) {
     }), {
         island: null
     }, 'split brain')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,
@@ -203,7 +202,7 @@ function prove (okay) {
     }), {
         island: null,
     }, 'bootstrap with rejoining')
-    okay(chaperon.actions({
+    okay(actions({
         island: {
             name: 'island',
             stable: true,

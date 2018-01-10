@@ -5,9 +5,16 @@ var url = require('url')
 
 var cadence = require('cadence')
 
+var actions = require('./actions')
+
+var logger = require('prolific.logger').createLogger('chaperon')
+
 function Middleware (options) {
+    this._colleagues = options.colleagues
     this._gatherer = options.gatherer
-    this._chaperon = options.chaperon
+    this._actuator = options.actuator
+    this._gathered = null
+    this._actions = []
     this.reactor = new Reactor(this, function (dispatcher) {
         dispatcher.dispatch('GET /', 'index')
         dispatcher.dispatch('GET /:island/halted', 'action')
@@ -20,43 +27,32 @@ Middleware.prototype.index = cadence(function () {
 })
 
 Middleware.prototype.probe = cadence(function (async, request) {
-    async(function () {
-        this._colleagues.get(async())
-    }, function (colleagues) {
-        this._gathered = this._gatherer.gather(colleagues)
-        this._actions = this._chaperon.stragize(gathered)
-        logger.info('probe.colleagues', { $colleagues: colleagues })
-        logger.info('probe.gathered', { $gathered: this._gathered })
-        logger.info('probe.actions', { $actions: this._actions })
-        async.forEach(function (action) {
-            switch (action.action) {
-            case 'bootstrap':
-                this._ua.fetch({
-                    url: url.resolve(action.url.self, 'bootstrap'),
-                    post: {
-                        republic: action.colleague.createdAt,
-                        url: action.url
-                    },
-                    gateways: [ raiseify(), jsonify({}) ]
-                }, async())
-                break
-            case 'join':
-                this._ua.fetch({
-                    url: url.resolve(action.url.self, 'join'),
-                    post: {
-                        republic: action.republic,
-                        url: action.url
-                    },
-                    gateways: [ raiseify(), jsonify({}) ]
-                }, async())
-                break
+    async([function () {
+        async(function () {
+            this._colleagues.get(async())
+        }, function (colleagues) {
+            this._gathered = this._gatherer.gather(colleagues)
+            this._actions = actions(this._gathered)
+            logger.info('probe.colleagues', { $colleagues: colleagues })
+            logger.info('probe.gathered', { $gathered: this._gathered })
+            logger.info('probe.actions', { $actions: this._actions })
+            var flattened = []
+            for (var island in this._actions) {
+                if (this._actions[island]) {
+                    flattened.push.apply(flattened, this._actions[island])
+                }
             }
-        })(this._actions)
-    })
+            async.forEach(function (action) {
+                this._actuator.actUpon(action, async())
+            })(flattened)
+        })
+    }, function (error) {
+        logger.error('probe', { stack: error.stack, statusCode: error.statusCode })
+    }])
 })
 
 Middleware.prototype.halted = cadence(function (async, request, island) {
-    return this._actions[island] === null ? 'Yes\n' : 'No\n'
+    return [ 200, { 'content-type': 'text/plain' }, this._actions[island] === null ? 'Yes\n' : 'No\n' ]
 })
 
 Middleware.prototype.health = cadence(function (async, request, island) {

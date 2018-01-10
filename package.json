@@ -29,7 +29,6 @@
                             "delta":                        "1.2.x",
                             "destructible":                 "0.17.x",
                             "extant":                       "1.0.x",
-                            "interlocutor":                 "0.5.x",
                             "magazine":                     "3.2.x",
                             "mingle.uptime":                "0.2.x",
                             "monotonic":                    "3.0.x",
@@ -41,6 +40,7 @@
     },
     "devDependencies":
     {
+                            "interlocutor":                 "0.5.x",
                             "proof":                        "3.0.x"
     },
     "main":                 "chaperon",

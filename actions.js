@@ -19,9 +19,6 @@ var Monotonic = require('monotonic').asString
 
 var logger = require('prolific.logger').createLogger('chaperon')
 
-function Chaperon () {
-}
-
 var byStartedAtThenId = ascension([ Number, String ], function (object) {
     return [ object.startedAt, object.id ]
 })
@@ -61,7 +58,7 @@ var byStartedAtThenId = ascension([ Number, String ], function (object) {
 // `arriving` or something.
 
 //
-Chaperon.prototype.actions = function (islands) {
+module.exports = function (islands) {
     var actions = {}
     // Chose an action for each island. A null list of actions indicates that
     // the island has halted.
@@ -144,5 +141,3 @@ Chaperon.prototype.actions = function (islands) {
     }
     return actions
 }
-
-module.exports = Chaperon
