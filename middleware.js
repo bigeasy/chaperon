@@ -43,7 +43,7 @@ Middleware.prototype.probe = cadence(function (async, request) {
                 }
             }
             async.forEach(function (action) {
-                this._actuator.actUpon(action, async())
+                this._actuator.actuate(action, async())
             })(flattened)
         })
     }, function (error) {

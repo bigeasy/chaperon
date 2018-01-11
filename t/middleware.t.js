@@ -96,7 +96,7 @@ function prove (async, okay) {
             }
         },
         actuator: {
-            actUpon: cadence(function () {})
+            actuate: cadence(function () {})
         }
     })
     async(function () {
