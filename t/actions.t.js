@@ -31,6 +31,7 @@ function prove (okay) {
                     startedAt: 0,
                     republic: null,
                     id: '1',
+                    url: 'http://127.0.0.1:8486/colleague/1/',
                     government: { majority: [], minority: [] }
                 }, {
                     island: 'island',
@@ -46,11 +47,13 @@ function prove (okay) {
     }), {
         island: [{
             action: 'bootstrap',
+            url: { self: 'http://127.0.0.1:8486/colleague/1/' },
             colleague: {
                 island: 'island',
                 id: '1',
                 startedAt: 0,
                 republic: null,
+                url: 'http://127.0.0.1:8486/colleague/1/',
                 government: { majority: [], minority: [] }
             }
         }]
