@@ -87,7 +87,11 @@ module.exports = function (islands) {
                     actions[name] = null
                 } else {
                     var oldest = island.uninitialized[0].colleagues.slice().sort(byStartedAtThenId).shift()
-                    actions[name].push({ action: 'bootstrap', colleague: oldest })
+                    actions[name].push({
+                        action: 'bootstrap',
+                        url: { self: oldest.url },
+                        colleague: oldest
+                    })
                 }
             }
         // This is split brain. Not really sure what the right answer is. It
@@ -109,34 +113,35 @@ module.exports = function (islands) {
         // to join by messaging the leader. This is a race condition since
         // leadership can change. If the consensus is under new leadership when
         // the participant trys to arrive it will crash restart.
-        } else if (
-            island.uninitialized.length != 0 &&
-            island.uninitialized[0].colleagues.filter(function (colleague) {
-                return !(
-                    colleague.rejoining == null ||
-                    colleague.rejoining == island.recoverable[0].republic
-                )
-            }).length != 0
-        ) {
-            actions[name] = null
-        } else {
-            var leaderId = island.recoverable[0].colleagues.sort(function (a, b) {
-                return Monotonic.compare(b.government.promise, a.government.promise)
-            })[0].government.majority[0]
-            var leader = island.recoverable[0].colleagues.filter(function (colleague) {
-                return colleague.id == leaderId
-            }).shift()
-            island.uninitialized[0].colleagues.forEach(function (colleague) {
-                actions[name].push({
-                    action: 'join',
-                    republic: leader.republic,
-                    url: {
-                        self: colleague.url,
-                        leader: leader.url
-                    },
-                    colleague: colleague
+        } else if (island.uninitialized.length != 0) {
+            if (
+                island.uninitialized[0].colleagues.filter(function (colleague) {
+                    return !(
+                        colleague.rejoining == null ||
+                        colleague.rejoining == island.recoverable[0].republic
+                    )
+                }).length != 0
+            ) {
+                actions[name] = null
+            } else {
+                var leaderId = island.recoverable[0].colleagues.sort(function (a, b) {
+                    return Monotonic.compare(b.government.promise, a.government.promise)
+                })[0].government.majority[0]
+                var leader = island.recoverable[0].colleagues.filter(function (colleague) {
+                    return colleague.id == leaderId
+                }).shift()
+                island.uninitialized[0].colleagues.forEach(function (colleague) {
+                    actions[name].push({
+                        action: 'join',
+                        republic: leader.republic,
+                        url: {
+                            self: colleague.url,
+                            leader: leader.url
+                        },
+                        colleague: colleague
+                    })
                 })
-            })
+            }
         }
     }
     return actions

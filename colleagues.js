@@ -44,7 +44,9 @@ Colleagues.prototype.get = cadence(function (async) {
             }, async())
         }
     }, function (got) {
+            console.log('GOT!!!', got)
         async.map(function (conduitUrl) {
+            console.log('CONDUITS!!!', conduitUrl)
             async(function () {
                 this._ua.fetch({
                     url: url.resolve(conduitUrl, './health'),

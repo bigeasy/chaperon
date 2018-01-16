@@ -26,10 +26,10 @@ function prove (okay) {
             minority: []
         }
     }]
-    var islands = gatherer.gather(colleagues)
+    var islands = gatherer.gather(colleagues, 0)
     okay(islands['island'].stable === false, 'unstable')
     now++
-    var islands = gatherer.gather(colleagues)
+    var islands = gatherer.gather(colleagues, 0)
 
     okay(islands['island'].stable, 'stable')
     okay(islands['island'], {
@@ -63,9 +63,9 @@ function prove (okay) {
             minority: []
         }
     }]
-    var islands = gatherer.gather(colleagues)
+    var islands = gatherer.gather(colleagues, 0)
     now++
-    var islands = gatherer.gather(colleagues)
+    var islands = gatherer.gather(colleagues, 0)
     okay(islands['island'], {
         name: 'island',
         stable: true,

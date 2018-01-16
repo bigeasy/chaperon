@@ -43,7 +43,7 @@ function group (groupBy, collection, list) {
     return groups
 }
 
-Gatherer.prototype.gather = function (colleagues) {
+Gatherer.prototype.gather = function (colleagues, decision) {
     var islands = group('island', 'colleagues', colleagues).map
     var gathered = {}
     // Deterimine the actions for each island.
@@ -59,7 +59,11 @@ Gatherer.prototype.gather = function (colleagues) {
         }
         // See if the colleagues that make up this island have stabilized.
         var uptime = this._uptimes.get(island.island, new Uptime({ Date: this._Date }))
-        if (uptime.calculate(island.colleagues) < this._stableAfter) {
+        var keyed = island.colleagues.map(function (colleague) {
+            return { id: colleague.id, promise: colleague.government.promise }
+        })
+        keyed.push(coalesce(decision))
+        if (uptime.calculate(keyed) < this._stableAfter) {
             continue
         }
         gathered[islandName].stable = true

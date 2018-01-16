@@ -15,6 +15,7 @@ function Middleware (options) {
     this._actuator = options.actuator
     this._gathered = null
     this._actions = []
+    this._decision = 0
     this.reactor = new Reactor(this, function (dispatcher) {
         dispatcher.dispatch('GET /', 'index')
         dispatcher.dispatch('GET /:island/halted', 'action')
@@ -31,7 +32,7 @@ Middleware.prototype.probe = cadence(function (async, request) {
         async(function () {
             this._colleagues.get(async())
         }, function (colleagues) {
-            this._gathered = this._gatherer.gather(colleagues)
+            this._gathered = this._gatherer.gather(colleagues, this._decision)
             this._actions = actions(this._gathered)
             logger.info('probe.colleagues', { $colleagues: colleagues })
             logger.info('probe.gathered', { $gathered: this._gathered })
@@ -43,6 +44,7 @@ Middleware.prototype.probe = cadence(function (async, request) {
                 }
             }
             async.forEach(function (action) {
+                this._decision++
                 this._actuator.actuate(action, async())
             })(flattened)
         })
