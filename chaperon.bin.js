@@ -19,6 +19,9 @@
         -i, --interval <seconds>
             how often to query the population
 
+        -t, --timeout <seconds>
+            how long to wait before giving up on an HTTP request
+
         --help
             display help message
 
@@ -62,13 +65,15 @@ require('arguable')(module, require('cadence')(function (async, program) {
     var Colleagues = require('./colleagues')
     var Middleware = require('./middleware')
 
+    var ua = new Vizsla().bind({ timeout: +coalesce(program.ultimate.timeout, 5) * 1000 })
+
     var Actuator = require('./actuator')
-    var actuator = new Actuator(new Vizsla())
+    var actuator = new Actuator(ua)
 
     var destroyer = require('server-destroy')
 
     var colleagues = new Colleagues({
-        ua: new Vizsla,
+        ua: ua,
         mingle: program.ultimate.mingle
     })
 
@@ -86,8 +91,8 @@ require('arguable')(module, require('cadence')(function (async, program) {
 
     var Isochronous = require('isochronous')
 
-    var interval = coalesce(+program.ultimate.interval, 5) * 1000
-    var isochronous = new Isochronous(middleware, 'probe', 1000)
+    var interval = coalesce(program.ultimate.interval, 5) * 1000
+    var isochronous = new Isochronous(middleware, 'probe', interval)
     destructible.addDestructor('isochronous', isochronous, 'stop')
 
     isochronous.run(destructible.monitor('isochronous'))
