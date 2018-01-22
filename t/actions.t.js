@@ -1,4 +1,4 @@
-require('proof')(8, prove)
+require('proof')(9, prove)
 
 function prove (okay) {
     var actions = require('../actions')
@@ -236,4 +236,33 @@ function prove (okay) {
     }), {
         island: null,
     }, 'join with wrong rejoining')
+    okay(actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [],
+            recoverable: [{
+                republic: 1,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 1,
+                    id: '3',
+                    url: 'http://127.0.0.1:8486/colleague/3',
+                    government: { promise: 'a/0', majority: [ '3' ], minority: [] }
+                }, {
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 1,
+                    id: '4',
+                    url: 'http://127.0.0.1:8486/colleague/4',
+                    government: { promise: 'a/0', majority: [ '3' ], minority: [] }
+                }]
+            }],
+            unrecoverable: []
+        }
+    }), {
+        island: []
+    }, 'nothing to do')
 }
