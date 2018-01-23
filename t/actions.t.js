@@ -1,4 +1,4 @@
-require('proof')(9, prove)
+require('proof')(10, prove)
 
 function prove (okay) {
     var actions = require('../actions')
@@ -250,14 +250,24 @@ function prove (okay) {
                     republic: 1,
                     id: '3',
                     url: 'http://127.0.0.1:8486/colleague/3',
-                    government: { promise: 'a/0', majority: [ '3' ], minority: [] }
+                    government: {
+                        promise: 'a/0',
+                        majority: [ '3' ],
+                        minority: [],
+                        constituents: [ '4' ]
+                    }
                 }, {
                     island: 'island',
                     startedAt: 0,
                     republic: 1,
                     id: '4',
                     url: 'http://127.0.0.1:8486/colleague/4',
-                    government: { promise: 'a/0', majority: [ '3' ], minority: [] }
+                    government: {
+                        promise: 'a/0',
+                        majority: [ '3' ],
+                        minority: [],
+                        constituents: [ '4' ]
+                    }
                 }]
             }],
             unrecoverable: []
@@ -265,4 +275,63 @@ function prove (okay) {
     }), {
         island: []
     }, 'nothing to do')
+    okay(actions({
+        island: {
+            name: 'island',
+            stable: true,
+            uninitialized: [],
+            recoverable: [{
+                republic: 1,
+                recoverable: true,
+                colleagues: [{
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 1,
+                    id: '3',
+                    url: 'http://127.0.0.1:8486/colleague/3',
+                    government: {
+                        promise: 'a/0',
+                        majority: [ '3' ],
+                        minority: [],
+                        constituents: []
+                    }
+                }, {
+                    island: 'island',
+                    startedAt: 0,
+                    republic: 1,
+                    id: '4',
+                    url: 'http://127.0.0.1:8486/colleague/4',
+                    government: {
+                        promise: '9/0',
+                        majority: [ '3' ],
+                        minority: [],
+                        constituents: [ '4' ]
+                    }
+                }]
+            }],
+            unrecoverable: []
+        }
+    }), {
+        island: [{
+            action: 'terminate',
+            republic: 1,
+            url: {
+                self: 'http://127.0.0.1:8486/colleague/4'
+            },
+            colleague: {
+                island: 'island',
+                id: '4',
+                url: 'http://127.0.0.1:8486/colleague/4',
+                startedAt: 0,
+                republic: 1,
+                url: 'http://127.0.0.1:8486/colleague/4',
+                government: {
+                    promise: '9/0',
+                    majority: [ '3' ],
+                    minority: [],
+                    constituents: [ '4' ]
+                }
+            }
+        }]
+    }, 'departed')
 }

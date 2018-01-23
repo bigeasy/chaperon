@@ -142,6 +142,24 @@ module.exports = function (islands) {
                     })
                 })
             }
+        } else {
+            var government = island.recoverable[0].colleagues.sort(function (a, b) {
+                return Monotonic.compare(b.government.promise, a.government.promise)
+            })[0].government
+            var population = government.majority.concat(government.minority).concat(government.constituents)
+            var departures = island.recoverable[0].colleagues.filter(function (colleague) {
+                return ! ~population.indexOf(colleague.id)
+            })
+            departures.forEach(function (colleague) {
+                actions[name].push({
+                    action: 'terminate',
+                    republic: colleague.republic,
+                    url: {
+                        self: colleague.url
+                    },
+                    colleague: colleague
+                })
+            })
         }
     }
     return actions
