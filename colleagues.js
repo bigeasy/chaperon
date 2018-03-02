@@ -66,7 +66,7 @@ Colleagues.prototype.get = cadence(function (async) {
                     }, function (got) {
                         colleagues.push({
                             island: got.island,
-                            republic: got.republic,
+                            republic: got.government.republic,
                             id: got.id,
                             startedAt: got.startedAt,
                             url: colleagueUrl,

@@ -30,10 +30,10 @@ function prove (async, okay) {
     var responses = [{
         requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
         island: 'island',
-        republic: 1,
         startedAt: 1,
         id: '1',
         government: {
+            republic: 1,
             majority: [ '1', '2' ],
             minority: [ '3' ],
             constituents: [],
@@ -59,10 +59,10 @@ function prove (async, okay) {
         responses = [{
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             island: 'island',
-            republic: 1,
             startedAt: 1,
             id: '1',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
@@ -70,11 +70,12 @@ function prove (async, okay) {
             }
         }, {
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
+            z: 1,
             island: 'island',
-            republic: 1,
             startedAt: 2,
             id: '2',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
@@ -85,26 +86,28 @@ function prove (async, okay) {
         colleagues.get(async())
     }, function (colleagues) {
         okay(colleagues, [{
-            island: 'island',
             republic: 1,
+            island: 'island',
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
             promise: '4/0',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
                 promise: '4/0'
             }
         }, {
-            island: 'island',
             republic: 1,
+            island: 'island',
             startedAt: 2,
             id: '2',
             url: 'http://10.2.77.6:8486/conduit/island/2/',
             promise: '4/0',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
@@ -114,10 +117,10 @@ function prove (async, okay) {
         responses = [{
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             island: 'island',
-            republic: 1,
             startedAt: 1,
             id: '1',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
@@ -126,10 +129,10 @@ function prove (async, okay) {
         }, {
             requests: { occupied: 1, waiting: 0, rejecting: 0, turnstiles: 24 },
             island: 'island',
-            republic: 1,
             startedAt: 2,
             id: '2',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
@@ -143,26 +146,28 @@ function prove (async, okay) {
         colleagues.get(async())
     }, function (colleagues) {
         okay(colleagues, [{
-            island: 'island',
             republic: 1,
+            island: 'island',
             startedAt: 1,
             id: '1',
             url: 'http://10.2.77.6:8486/conduit/island/1/',
             promise: '4/0',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
                 promise: '4/0'
             }
         }, {
-            island: 'island',
             republic: 1,
+            island: 'island',
             startedAt: 2,
             id: '2',
             url: 'http://10.2.77.6:8486/conduit/island/2/',
             promise: '4/0',
             government: {
+                republic: 1,
                 majority: [ '1', '2' ],
                 minority: [ '3' ],
                 constituents: [],
